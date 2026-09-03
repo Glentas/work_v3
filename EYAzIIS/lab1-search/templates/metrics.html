@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Метрики{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Метрики качества</h1>
+
+    {% if summary.total_queries == 0 %}
+        <p>
+            Оценок пока нет. Выполните поиск, отметьте релевантные документы чекбоксами
+            и нажмите «Сохранить оценку».
+        </p>
+    {% else %}
+        <h2>Макроусреднённые показатели</h2>
+
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Всего запросов</th>
+                    <th>Recall</th>
+                    <th>Precision</th>
+                    <th>AvgPrec</th>
+                    <th>P@5</th>
+                    <th>P@10</th>
+                    <th>R-Prec</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{ summary.total_queries }}</td>
+                    <td>{{ "%.3f"|format(summary.avg_recall) if summary.avg_recall is not none else "-" }}</td>
+                    <td>{{ "%.3f"|format(summary.avg_precision) if summary.avg_precision is not none else "-" }}</td>
+                    <td>{{ "%.3f"|format(summary.avg_avg_prec) if summary.avg_avg_prec is not none else "-" }}</td>
+                    <td>{{ "%.3f"|format(summary.avg_p5) if summary.avg_p5 is not none else "-" }}</td>
+                    <td>{{ "%.3f"|format(summary.avg_p10) if summary.avg_p10 is not none else "-" }}</td>
+                    <td>{{ "%.3f"|format(summary.avg_r_prec) if summary.avg_r_prec is not none else "-" }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="average-chart" height="90"></canvas>
+        </div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>Оценки запросов</h2>
+
+    <div id="metrics-scroll" class="metrics-scroll">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Запрос</th>
+                <th>Recall</th>
+                <th>Precision</th>
+                <th>AvgPrec</th>
+                <th>P@5</th>
+                <th>P@10</th>
+                <th>R-Prec</th>
+                <th>Дата</th>
+            </tr>
+            </thead>
+            <tbody id="metrics-body"></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card">
+    <h2>11-точечный график полноты/точности</h2>
+
+    <p class="muted">
+        Кликните по строке таблицы, чтобы показать график для конкретного запроса.
+    </p>
+
+    <button class="btn" id="show-avg-chart">Показать усреднённый график</button>
+
+    <div class="chart-container">
+        <canvas id="pr-chart"></canvas>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    window.avgPrCurve = {{ summary.avg_pr_curve|tojson }};
+    window.hasMetrics = {{ summary.total_queries > 0 }};
+</script>
+<script src="/static/app.js"></script>
+{% endblock %}

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}СИП{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="navbar">
+    <div class="container nav-inner">
+        <a class="brand" href="/">Информационно-поисковая система</a>
+
+        <nav class="nav-links">
+            <a href="/">Поиск</a>
+            <a href="/metrics">Метрики</a>
+            <a href="/help">Справка</a>
+
+            <form method="post" action="/reindex" class="inline-form"
+                  onsubmit="return confirm('Переиндексировать коллекцию? Все старые оценки будут удалены.');">
+                <button type="submit" class="btn btn-small">Переиндексация</button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    {% block content %}{% endblock %}
+</main>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

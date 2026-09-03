@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Документ{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>{{ doc['title'] }}</h1>
+
+    <p class="muted">
+        Дата добавления: {{ doc['date'] }} {{ doc['time'] }}
+    </p>
+
+    <p>
+        <strong>Ключевые слова:</strong>
+        {{ doc['keywords'] }}
+    </p>
+
+    <p>
+        <a class="btn" href="/documents/{{ doc['id'] }}/download">Скачать документ</a>
+    </p>
+
+    <div class="document-text">{{ doc['text'] }}</div>
+</div>
+{% endblock %}
