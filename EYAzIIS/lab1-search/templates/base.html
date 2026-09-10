@@ -3,22 +3,28 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}СИП{% endblock %}</title>
+    <title>{% block title %}Информационно-поисковая система{% endblock %}</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563eb'/><text x='16' y='23' font-size='18' text-anchor='middle' fill='white' font-family='sans-serif'>П</text></svg>">
 </head>
 <body>
+{% set path = request.url.path %}
+
 <header class="navbar">
     <div class="container nav-inner">
-        <a class="brand" href="/">Информационно-поисковая система</a>
+        <a class="brand" href="/">
+            <span class="brand-mark">П</span>
+            Информационно-поисковая система
+        </a>
 
         <nav class="nav-links">
-            <a href="/">Поиск</a>
-            <a href="/metrics">Метрики</a>
-            <a href="/help">Справка</a>
+            <a href="/" class="{{ 'active' if path in ['/', '/search'] }}">Поиск</a>
+            <a href="/metrics" class="{{ 'active' if path == '/metrics' }}">Метрики</a>
+            <a href="/help" class="{{ 'active' if path == '/help' }}">Справка</a>
 
             <form method="post" action="/reindex" class="inline-form"
-                  onsubmit="return confirm('Переиндексировать коллекцию? Все старые оценки будут удалены.');">
-                <button type="submit" class="btn btn-small">Переиндексация</button>
+                  onsubmit="return confirm('Переиндексировать коллекцию?\n\nВсе сохранённые отметки релевантности и оценки качества будут удалены, так как идентификаторы документов изменятся.');">
+                <button type="submit" class="btn btn-small btn-secondary">Переиндексация</button>
             </form>
         </nav>
     </div>
@@ -27,6 +33,19 @@
 <main class="container">
     {% block content %}{% endblock %}
 </main>
+
+<footer class="footer">
+    <div class="container">
+        {% if index and index.documents %}
+            <span>В индексе <strong>{{ index.documents }}</strong> документов
+                  · <strong>{{ index.terms }}</strong> терминов</span>
+        {% else %}
+            <span>Индекс пуст — нажмите «Переиндексация»</span>
+        {% endif %}
+        <span class="spacer"></span>
+        <a href="/help">Справка</a>
+    </div>
+</footer>
 
 {% block scripts %}{% endblock %}
 </body>

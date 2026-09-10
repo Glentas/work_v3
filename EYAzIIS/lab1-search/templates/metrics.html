@@ -1,94 +1,124 @@
 {% extends "base.html" %}
 
-{% block title %}Метрики{% endblock %}
+{% block title %}Метрики — ИПС{% endblock %}
 
 {% block content %}
 <div class="card">
     <h1>Метрики качества</h1>
 
     {% if summary.total_queries == 0 %}
-        <p>
-            Оценок пока нет. Выполните поиск, отметьте релевантные документы чекбоксами
+        <p class="muted">
+            Оценок пока нет. Найдите документы, отметьте релевантные чекбоксами
             и нажмите «Сохранить оценку».
+            <a href="/">Перейти к поиску →</a>
         </p>
     {% else %}
-        <h2>Макроусреднённые показатели</h2>
+        <p class="muted subtitle">Оценённых запросов: {{ summary.total_queries }}</p>
+
+        <div class="metrics-grid">
+            {% for name, label in labels %}
+                <div class="metric-tile">
+                    <span class="label">{{ label }}</span>
+                    <span class="value">
+                        {{ '%.3f'|format(summary.macro[name]) if summary.macro[name] is not none else '—' }}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
 
         <div class="table-wrap">
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Всего запросов</th>
-                    <th>Recall</th>
-                    <th>Precision</th>
-                    <th>AvgPrec</th>
-                    <th>P@5</th>
-                    <th>P@10</th>
-                    <th>R-Prec</th>
+                    <th>Усреднение</th>
+                    {% for _, label in labels %}
+                        <th class="num">{{ label }}</th>
+                    {% endfor %}
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td>{{ summary.total_queries }}</td>
-                    <td>{{ "%.3f"|format(summary.avg_recall) if summary.avg_recall is not none else "-" }}</td>
-                    <td>{{ "%.3f"|format(summary.avg_precision) if summary.avg_precision is not none else "-" }}</td>
-                    <td>{{ "%.3f"|format(summary.avg_avg_prec) if summary.avg_avg_prec is not none else "-" }}</td>
-                    <td>{{ "%.3f"|format(summary.avg_p5) if summary.avg_p5 is not none else "-" }}</td>
-                    <td>{{ "%.3f"|format(summary.avg_p10) if summary.avg_p10 is not none else "-" }}</td>
-                    <td>{{ "%.3f"|format(summary.avg_r_prec) if summary.avg_r_prec is not none else "-" }}</td>
+                    <td>Макро</td>
+                    {% for name, _ in labels %}
+                        <td class="num">
+                            {{ '%.3f'|format(summary.macro[name]) if summary.macro[name] is not none else '—' }}
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Микро</td>
+                    <td class="num">{{ '%.3f'|format(summary.micro.recall) }}</td>
+                    <td class="num">{{ '%.3f'|format(summary.micro.precision) }}</td>
+                    <td class="num">{{ '%.3f'|format(summary.micro.f_measure) }}</td>
+                    {% for _ in range(labels|length - 3) %}
+                        <td class="num muted">—</td>
+                    {% endfor %}
                 </tr>
                 </tbody>
             </table>
         </div>
-
-        <div class="chart-container">
-            <canvas id="average-chart" height="90"></canvas>
-        </div>
     {% endif %}
 </div>
 
+<div class="charts">
+    <div class="chart-card">
+        <h2>Средние значения метрик</h2>
+        <div class="chart-box">
+            <canvas id="metrics-bar-chart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <h2>График полноты/точности</h2>
+        <div class="chart-box">
+            <canvas id="pr-chart"></canvas>
+        </div>
+        <p style="margin:10px 0 0">
+            <button class="btn btn-small btn-secondary" id="show-avg-chart"
+                    {% if summary.total_queries == 0 %}disabled{% endif %}>
+                Усреднённый график
+            </button>
+        </p>
+    </div>
+</div>
+
 <div class="card">
-    <h2>Оценки запросов</h2>
+    <h2>Оценки по запросам</h2>
+    <p class="muted">Клик по строке — график этого запроса.</p>
 
     <div id="metrics-scroll" class="metrics-scroll">
         <table class="table">
             <thead>
             <tr>
                 <th>Запрос</th>
-                <th>Recall</th>
-                <th>Precision</th>
-                <th>AvgPrec</th>
-                <th>P@5</th>
-                <th>P@10</th>
-                <th>R-Prec</th>
-                <th>Дата</th>
+                <th class="num">Найдено</th>
+                <th class="num">Релев.</th>
+                <th class="num">Recall</th>
+                <th class="num">Precision</th>
+                <th class="num">F-мера</th>
+                <th class="num">AvgPrec</th>
+                <th class="num">P@5</th>
+                <th class="num">P@10</th>
+                <th class="num">R-Prec</th>
+                <th>Сохранено</th>
             </tr>
             </thead>
             <tbody id="metrics-body"></tbody>
         </table>
     </div>
 </div>
-
-<div class="card">
-    <h2>11-точечный график полноты/точности</h2>
-
-    <p class="muted">
-        Кликните по строке таблицы, чтобы показать график для конкретного запроса.
-    </p>
-
-    <button class="btn" id="show-avg-chart">Показать усреднённый график</button>
-
-    <div class="chart-container">
-        <canvas id="pr-chart"></canvas>
-    </div>
-</div>
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/static/vendor/chart.umd.min.js"></script>
 <script>
-    window.avgPrCurve = {{ summary.avg_pr_curve|tojson }};
-    window.hasMetrics = {{ summary.total_queries > 0 }};
+    window.metricsData = {
+        labels: {{ labels|map(attribute=1)|list|tojson }},
+        fields: {{ labels|map(attribute=0)|list|tojson }},
+        macro: {{ summary.macro|tojson }},
+        avgPrCurve: {{ summary.avg_pr_curve|list|tojson }},
+        hasMetrics: {{ 'true' if summary.total_queries > 0 else 'false' }}
+    };
 </script>
 <script src="/static/app.js"></script>
 {% endblock %}

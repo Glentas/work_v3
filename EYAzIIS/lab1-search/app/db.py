@@ -1,280 +1,401 @@
+"""Слой доступа к данным.
+
+Все обращения к SQLite идут через контекстный менеджер :func:`connect`,
+поэтому соединения не утекают даже при исключениях.
+
+База открывается в режиме WAL с увеличенным таймаутом ожидания блокировки —
+это обязательное условие для сервера в локальной сети, где отметки
+релевантности может одновременно ставить несколько клиентов.
+"""
+
+from __future__ import annotations
+
 import json
 import sqlite3
-from pathlib import Path
+from collections.abc import Iterable, Iterator, Sequence
+from contextlib import contextmanager
 from datetime import datetime
+from pathlib import Path
 
 from . import config
+from .domain import METRIC_LABELS, Metrics, MetricsSummary, SearchParams
+
+_SCHEMA = Path(__file__).parent / "schema.sql"
+_PR_CURVE_POINTS = 11
 
 
-def get_conn() -> sqlite3.Connection:
-    conn = sqlite3.connect(config.DB_PATH)
+# ---------------------------------------------------------------------------
+# Соединение
+# ---------------------------------------------------------------------------
+@contextmanager
+def connect() -> Iterator[sqlite3.Connection]:
+    """Открывает соединение и гарантированно закрывает его на выходе.
+
+    ``isolation_level=None`` включает режим autocommit: одиночные операторы
+    фиксируются сразу, а многооператорные атомарные блоки (переиндексация)
+    управляются явно через :func:`transaction`.
+
+    ``check_same_thread=False`` обязателен для связки с FastAPI: фреймворк
+    выполняет вход в зависимость, тело обработчика и выход из зависимости
+    в разных потоках своего пула, а sqlite3 по умолчанию запрещает трогать
+    соединение из «чужого» потока. Это безопасно, потому что каждое соединение
+    принадлежит одному запросу и между запросами не разделяется, а параллельный
+    доступ к файлу базы обеспечивает режим WAL.
+    """
+    conn = sqlite3.connect(
+        config.DB_PATH,
+        timeout=config.DB_BUSY_TIMEOUT_MS / 1000,
+        isolation_level=None,
+        check_same_thread=False,
+    )
     conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    return conn
+    try:
+        conn.execute("PRAGMA foreign_keys = ON")
+        conn.execute(f"PRAGMA busy_timeout = {config.DB_BUSY_TIMEOUT_MS}")
+        yield conn
+    finally:
+        conn.close()
+
+
+@contextmanager
+def transaction(conn: sqlite3.Connection) -> Iterator[sqlite3.Connection]:
+    """Атомарный блок: либо фиксируются все изменения, либо ни одного.
+
+    ``BEGIN IMMEDIATE`` сразу захватывает блокировку записи, поэтому
+    параллельный клиент не сможет вклиниться в середину переиндексации.
+    """
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        yield conn
+    except BaseException:
+        conn.execute("ROLLBACK")
+        raise
+    conn.execute("COMMIT")
 
 
 def init_db() -> None:
-    conn = get_conn()
-    schema_path = Path(__file__).parent / "schema.sql"
-    with open(schema_path, "r", encoding="utf-8") as f:
-        conn.executescript(f.read())
-
-    row = conn.execute("SELECT id FROM metrics_summary WHERE id = 1").fetchone()
-    if row is None:
-        conn.execute("INSERT INTO metrics_summary (id) VALUES (1)")
-
-    conn.commit()
-    conn.close()
+    """Создаёт схему и переводит базу в режим WAL."""
+    config.ensure_dirs()
+    with connect() as conn:
+        conn.executescript(_SCHEMA.read_text(encoding="utf-8"))
+        conn.execute("PRAGMA journal_mode = WAL")
 
 
-def get_query_by_params(conn: sqlite3.Connection, params):
-    params_json = params.model_dump_json()
+# ---------------------------------------------------------------------------
+# Вспомогательное
+# ---------------------------------------------------------------------------
+def _in_clause(values: Sequence) -> str:
+    """Плейсхолдеры для оператора IN. Значения всегда передаются параметрами."""
+    return ",".join("?" * len(values))
+
+
+def _now() -> str:
+    return datetime.now().isoformat(timespec="seconds")
+
+
+# ---------------------------------------------------------------------------
+# Документы
+# ---------------------------------------------------------------------------
+def get_document(conn: sqlite3.Connection, doc_id: int) -> sqlite3.Row | None:
     return conn.execute(
-        "SELECT * FROM queries WHERE params_json = ?",
-        (params_json,)
+        "SELECT * FROM documents WHERE id = ?", (doc_id,)
     ).fetchone()
 
 
-def ensure_query(conn: sqlite3.Connection, params) -> int:
-    existing = get_query_by_params(conn, params)
-    if existing:
-        return existing["id"]
+def count_documents(conn: sqlite3.Connection) -> int:
+    return conn.execute("SELECT COUNT(*) FROM documents").fetchone()[0]
 
-    now = datetime.now().isoformat(timespec="seconds")
-    cur = conn.execute(
+
+# ---------------------------------------------------------------------------
+# Запросы и экспертные отметки
+# ---------------------------------------------------------------------------
+def find_query_id(conn: sqlite3.Connection, params: SearchParams) -> int | None:
+    row = conn.execute(
+        "SELECT id FROM queries WHERE params_json = ?", (params.key,)
+    ).fetchone()
+    return row["id"] if row else None
+
+
+def ensure_query(conn: sqlite3.Connection, params: SearchParams) -> int:
+    """Возвращает id запроса, создавая запись при первом обращении."""
+    existing = find_query_id(conn, params)
+    if existing is not None:
+        return existing
+
+    return conn.execute(
         "INSERT INTO queries (query_text, params_json, created_at) VALUES (?, ?, ?)",
-        (params.q, params.model_dump_json(), now)
-    )
-    conn.commit()
-    return cur.lastrowid
+        (params.q, params.key, _now()),
+    ).lastrowid
 
 
-def get_relevant_doc_ids(conn: sqlite3.Connection, query_id: int) -> set[int]:
+def relevant_doc_ids(conn: sqlite3.Connection, query_id: int) -> set[int]:
     rows = conn.execute(
-        "SELECT doc_id FROM relevance_marks WHERE query_id = ?",
-        (query_id,)
+        "SELECT doc_id FROM relevance_marks WHERE query_id = ?", (query_id,)
     ).fetchall()
     return {row["doc_id"] for row in rows}
 
 
-def set_relevance(conn: sqlite3.Connection, query_id: int, doc_id: int, relevant: bool) -> None:
-    if relevant:
-        conn.execute(
-            "INSERT OR IGNORE INTO relevance_marks (query_id, doc_id, relevant) VALUES (?, ?, 1)",
-            (query_id, doc_id)
-        )
-    else:
-        conn.execute(
-            "DELETE FROM relevance_marks WHERE query_id = ? AND doc_id = ?",
-            (query_id, doc_id)
-        )
-    conn.commit()
+def set_relevance(
+    conn: sqlite3.Connection,
+    query_id: int,
+    doc_ids: Iterable[int],
+    relevant: bool,
+) -> None:
+    """Отмечает документы как релевантные либо снимает отметку.
 
-
-def set_relevance_batch(conn: sqlite3.Connection, query_id: int, doc_ids: list[int], relevant: bool) -> None:
-    if not doc_ids:
+    Отметка хранится фактом существования строки, поэтому «снятие» — это
+    удаление, и отдельный столбец relevant не нужен.
+    """
+    ids = list(dict.fromkeys(doc_ids))
+    if not ids:
         return
 
-    chunk_size = 500
-
     if relevant:
-        for i in range(0, len(doc_ids), chunk_size):
-            chunk = doc_ids[i:i + chunk_size]
-            conn.executemany(
-                "INSERT OR IGNORE INTO relevance_marks (query_id, doc_id, relevant) VALUES (?, ?, 1)",
-                [(query_id, doc_id) for doc_id in chunk]
-            )
+        conn.executemany(
+            "INSERT OR IGNORE INTO relevance_marks (query_id, doc_id) VALUES (?, ?)",
+            [(query_id, doc_id) for doc_id in ids],
+        )
     else:
-        for i in range(0, len(doc_ids), chunk_size):
-            chunk = doc_ids[i:i + chunk_size]
-            placeholders = ",".join("?" for _ in chunk)
-            conn.execute(
-                f"DELETE FROM relevance_marks WHERE query_id = ? AND doc_id IN ({placeholders})",
-                [query_id, *chunk]
-            )
-
-    conn.commit()
+        conn.execute(
+            f"DELETE FROM relevance_marks WHERE query_id = ? AND doc_id IN ({_in_clause(ids)})",
+            [query_id, *ids],
+        )
 
 
-def delete_all_relevance(conn: sqlite3.Connection, query_id: int) -> None:
+def clear_relevance(conn: sqlite3.Connection, query_id: int) -> None:
     conn.execute("DELETE FROM relevance_marks WHERE query_id = ?", (query_id,))
-    conn.commit()
 
 
-def _update_summary(conn: sqlite3.Connection, values: dict, factor: int) -> None:
-    row = conn.execute("SELECT * FROM metrics_summary WHERE id = 1").fetchone()
+def mark_relevance(
+    conn: sqlite3.Connection, params: SearchParams, doc_ids: list[int], relevant: bool
+) -> int:
+    """Сохраняет отметки и возвращает id запроса, переживая переиндексацию.
 
-    total = row["total_queries"] + factor
-    if total <= 0:
-        conn.execute(
-            """
-            UPDATE metrics_summary
-            SET total_queries = 0,
-                sum_recall = 0,
-                sum_precision = 0,
-                sum_avg_prec = 0,
-                sum_p5 = 0,
-                sum_p10 = 0,
-                sum_r_prec = 0,
-                sum_pr_curve = '[]'
-            WHERE id = 1
-            """
-        )
-        return
-
-    old_curve = json.loads(row["sum_pr_curve"] or "[]")
-    if len(old_curve) != 11:
-        old_curve = [0.0] * 11
-
-    new_curve = [
-        old_curve[i] + factor * values["pr_curve"][i]
-        for i in range(11)
-    ]
-
-    conn.execute(
-        """
-        UPDATE metrics_summary
-        SET total_queries = ?,
-            sum_recall = ?,
-            sum_precision = ?,
-            sum_avg_prec = ?,
-            sum_p5 = ?,
-            sum_p10 = ?,
-            sum_r_prec = ?,
-            sum_pr_curve = ?
-        WHERE id = 1
-        """,
-        (
-            total,
-            row["sum_recall"] + factor * values["recall"],
-            row["sum_precision"] + factor * values["precision"],
-            row["sum_avg_prec"] + factor * values["avg_prec"],
-            row["sum_p5"] + factor * values["p5"],
-            row["sum_p10"] + factor * values["p10"],
-            row["sum_r_prec"] + factor * values["r_prec"],
-            json.dumps(new_curve),
-        )
-    )
+    Переиндексация удаляет запросы и отметки, поэтому запись, начатая до неё,
+    может нарушить внешний ключ. В этом случае операция повторяется один раз:
+    запрос пересоздаётся уже в новом индексе. Если и повтор не удался,
+    исключение передаётся вызывающему слою.
+    """
+    try:
+        query_id = ensure_query(conn, params)
+        set_relevance(conn, query_id, doc_ids, relevant)
+        return query_id
+    except sqlite3.IntegrityError:
+        query_id = ensure_query(conn, params)
+        set_relevance(conn, query_id, doc_ids, relevant)
+        return query_id
 
 
-def save_metrics_for_query(conn: sqlite3.Connection, query_id: int, metrics: dict) -> None:
-    old = conn.execute(
-        "SELECT * FROM query_metrics WHERE query_id = ?",
-        (query_id,)
-    ).fetchone()
+# ---------------------------------------------------------------------------
+# Метрики качества
+# ---------------------------------------------------------------------------
+def save_metrics(conn: sqlite3.Connection, query_id: int, m: Metrics) -> None:
+    """Сохраняет оценку запроса, заменяя предыдущую.
 
-    if old:
-        old_values = {
-            "recall": old["recall"],
-            "precision": old["precision"],
-            "avg_prec": old["avg_prec"],
-            "p5": old["p5"],
-            "p10": old["p10"],
-            "r_prec": old["r_prec"],
-            "pr_curve": json.loads(old["pr_curve"] or "[]"),
-        }
-        _update_summary(conn, old_values, -1)
-        conn.execute("DELETE FROM query_metrics WHERE query_id = ?", (query_id,))
-
-    now = datetime.now().isoformat(timespec="seconds")
-
+    Сводные показатели не накапливаются инкрементально, а вычисляются
+    заново из этой таблицы (см. :func:`metrics_summary`), поэтому повторное
+    сохранение оценки не может привести к расхождению сумм.
+    """
     conn.execute(
         """
         INSERT INTO query_metrics (
-            query_id, total_found, total_relevant, relevant_positions,
-            recall, precision, avg_prec, p5, p10, r_prec, pr_curve, created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            query_id, total_found, total_relevant, found_relevant,
+            relevant_positions, recall, precision, f_measure, avg_prec,
+            p5, p10, r_prec, pr_curve, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(query_id) DO UPDATE SET
+            total_found        = excluded.total_found,
+            total_relevant     = excluded.total_relevant,
+            found_relevant     = excluded.found_relevant,
+            relevant_positions = excluded.relevant_positions,
+            recall             = excluded.recall,
+            precision          = excluded.precision,
+            f_measure          = excluded.f_measure,
+            avg_prec           = excluded.avg_prec,
+            p5                 = excluded.p5,
+            p10                = excluded.p10,
+            r_prec             = excluded.r_prec,
+            pr_curve           = excluded.pr_curve,
+            created_at         = excluded.created_at
         """,
         (
             query_id,
-            metrics["total_found"],
-            metrics["total_relevant"],
-            json.dumps(metrics["relevant_positions"]),
-            metrics["recall"],
-            metrics["precision"],
-            metrics["avg_prec"],
-            metrics["p5"],
-            metrics["p10"],
-            metrics["r_prec"],
-            json.dumps(metrics["pr_curve"]),
-            now,
-        )
+            m.total_found,
+            m.total_relevant,
+            m.found_relevant,
+            json.dumps(list(m.relevant_positions)),
+            m.recall,
+            m.precision,
+            m.f_measure,
+            m.avg_prec,
+            m.p5,
+            m.p10,
+            m.r_prec,
+            json.dumps(list(m.pr_curve)),
+            _now(),
+        ),
     )
 
-    _update_summary(conn, metrics, 1)
-    conn.commit()
 
+def metrics_summary(conn: sqlite3.Connection) -> MetricsSummary:
+    """Макро- и микроусреднённые показатели по всем сохранённым оценкам."""
+    row = conn.execute(
+        """
+        SELECT COUNT(*)            AS n,
+               AVG(recall)         AS recall,
+               AVG(precision)      AS precision,
+               AVG(f_measure)      AS f_measure,
+               AVG(avg_prec)       AS avg_prec,
+               AVG(p5)             AS p5,
+               AVG(p10)            AS p10,
+               AVG(r_prec)         AS r_prec,
+               SUM(found_relevant) AS found_relevant,
+               SUM(total_found)    AS total_found,
+               SUM(total_relevant) AS total_relevant
+        FROM query_metrics
+        """
+    ).fetchone()
 
-def get_metrics_summary(conn: sqlite3.Connection) -> dict:
-    row = conn.execute("SELECT * FROM metrics_summary WHERE id = 1").fetchone()
-    total = row["total_queries"]
+    total = row["n"] or 0
+    macro = {name: row[name] for name, _ in METRIC_LABELS}
 
     if total == 0:
-        return {
-            "total_queries": 0,
-            "avg_recall": None,
-            "avg_precision": None,
-            "avg_avg_prec": None,
-            "avg_p5": None,
-            "avg_p10": None,
-            "avg_r_prec": None,
-            "avg_pr_curve": [0.0] * 11,
-        }
+        return MetricsSummary(
+            total_queries=0,
+            macro={name: None for name, _ in METRIC_LABELS},
+            micro={"recall": None, "precision": None, "f_measure": None},
+            avg_pr_curve=tuple([0.0] * _PR_CURVE_POINTS),
+        )
 
-    curve_sum = json.loads(row["sum_pr_curve"] or "[]")
-    if len(curve_sum) != 11:
-        curve_sum = [0.0] * 11
+    # Микроусреднение (РОМИП'2004, п. 1.2): метрика считается по суммарным
+    # количествам документов матрицы классификации, а не как среднее запросов.
+    a = row["found_relevant"] or 0        # релевантные, найденные системой
+    ab = row["total_found"] or 0          # a + b: все найденные
+    ac = row["total_relevant"] or 0       # a + c: все релевантные
+    micro_p = a / ab if ab else 0.0
+    micro_r = a / ac if ac else 0.0
+    micro_f = (
+        2 * micro_p * micro_r / (micro_p + micro_r) if (micro_p + micro_r) else 0.0
+    )
 
-    avg_curve = [x / total for x in curve_sum]
+    curves = [
+        json.loads(value)
+        for (value,) in conn.execute("SELECT pr_curve FROM query_metrics")
+    ]
+    curves = [c for c in curves if len(c) == _PR_CURVE_POINTS]
+    avg_curve = tuple(
+        sum(c[i] for c in curves) / len(curves) if curves else 0.0
+        for i in range(_PR_CURVE_POINTS)
+    )
 
+    return MetricsSummary(
+        total_queries=total,
+        macro=macro,
+        micro={"recall": micro_r, "precision": micro_p, "f_measure": micro_f},
+        avg_pr_curve=avg_curve,
+    )
+
+
+def metrics_rows(
+    conn: sqlite3.Connection, limit: int, offset: int
+) -> list[sqlite3.Row]:
+    return conn.execute(
+        """
+        SELECT qm.query_id, q.query_text, qm.total_found, qm.total_relevant,
+               qm.recall, qm.precision, qm.f_measure, qm.avg_prec,
+               qm.p5, qm.p10, qm.r_prec, qm.created_at
+        FROM query_metrics qm
+        JOIN queries q ON q.id = qm.query_id
+        ORDER BY qm.created_at DESC, qm.query_id DESC
+        LIMIT ? OFFSET ?
+        """,
+        (limit, offset),
+    ).fetchall()
+
+
+def metrics_count(conn: sqlite3.Connection) -> int:
+    return conn.execute("SELECT COUNT(*) FROM query_metrics").fetchone()[0]
+
+
+def pr_curve(conn: sqlite3.Connection, query_id: int) -> list[float]:
+    row = conn.execute(
+        "SELECT pr_curve FROM query_metrics WHERE query_id = ?", (query_id,)
+    ).fetchone()
+    return json.loads(row["pr_curve"]) if row and row["pr_curve"] else []
+
+
+def pr_curve_data(conn: sqlite3.Connection, query_id: int) -> dict | None:
+    """Данные для графика полнота/точность: кривая и фактические срезы.
+
+    Срезы восстанавливаются из сохранённых позиций релевантных документов,
+    поэтому отдельный столбец для них не нужен.
+    """
+    from .evaluation import precision_recall_cuts
+
+    row = conn.execute(
+        """
+        SELECT q.query_text      AS query_text,
+               qm.total_found    AS total_found,
+               qm.total_relevant AS total_relevant,
+               qm.relevant_positions AS relevant_positions,
+               qm.pr_curve       AS pr_curve
+        FROM query_metrics qm
+        JOIN queries q ON q.id = qm.query_id
+        WHERE qm.query_id = ?
+        """,
+        (query_id,),
+    ).fetchone()
+
+    if row is None:
+        return None
+
+    positions = json.loads(row["relevant_positions"] or "[]")
     return {
-        "total_queries": total,
-        "avg_recall": row["sum_recall"] / total,
-        "avg_precision": row["sum_precision"] / total,
-        "avg_avg_prec": row["sum_avg_prec"] / total,
-        "avg_p5": row["sum_p5"] / total,
-        "avg_p10": row["sum_p10"] / total,
-        "avg_r_prec": row["sum_r_prec"] / total,
-        "avg_pr_curve": avg_curve,
+        "query_text": row["query_text"],
+        "total_found": row["total_found"],
+        "total_relevant": row["total_relevant"],
+        "relevant_positions": positions,
+        "interpolated": json.loads(row["pr_curve"] or "[]"),
+        "cuts": [
+            list(cut) for cut in precision_recall_cuts(positions, row["total_relevant"])
+        ],
     }
 
 
-def get_metrics_rows(conn: sqlite3.Connection, limit: int, offset: int) -> list[dict]:
-    rows = conn.execute(
-        """
-        SELECT
-            qm.query_id,
-            q.query_text,
-            qm.recall,
-            qm.precision,
-            qm.avg_prec,
-            qm.p5,
-            qm.p10,
-            qm.r_prec,
-            qm.created_at
-        FROM query_metrics qm
-        JOIN queries q ON q.id = qm.query_id
-        ORDER BY qm.created_at DESC
-        LIMIT ? OFFSET ?
-        """,
-        (limit, offset)
-    ).fetchall()
+def reset_all(conn: sqlite3.Connection) -> None:
+    """Полностью очищает базу перед переиндексацией.
 
-    return [dict(row) for row in rows]
+    Идентификаторы документов после переиндексации меняются, поэтому
+    разметка релевантности и сохранённые оценки теряют смысл и удаляются.
+    Вызывается только внутри транзакции :func:`transaction`.
+    """
+    for table in (
+        "query_metrics",
+        "relevance_marks",
+        "queries",
+        "postings",
+        "documents",
+        "terms",
+    ):
+        conn.execute(f"DELETE FROM {table}")
 
 
-def get_metrics_row_count(conn: sqlite3.Connection) -> int:
-    row = conn.execute("SELECT COUNT(*) AS cnt FROM query_metrics").fetchone()
-    return row["cnt"]
-
-
-def get_pr_curve(conn: sqlite3.Connection, query_id: int) -> list[float]:
+def index_info(conn: sqlite3.Connection) -> dict[str, int]:
+    """Состояние индекса — для отображения на страницах интерфейса."""
     row = conn.execute(
-        "SELECT pr_curve FROM query_metrics WHERE query_id = ?",
-        (query_id,)
+        """
+        SELECT (SELECT COUNT(*) FROM documents) AS documents,
+               (SELECT COUNT(*) FROM terms)     AS terms,
+               (SELECT COUNT(*) FROM postings)  AS postings
+        """
     ).fetchone()
+    return {key: row[key] for key in row.keys()}
 
-    if not row:
-        return []
 
-    return json.loads(row["pr_curve"] or "[]")
+def clear_evaluations(conn: sqlite3.Connection) -> None:
+    """Удаляет разметку и сохранённые оценки, не трогая индекс.
+
+    Используется тестами, чтобы проверки не зависели от порядка выполнения.
+    """
+    for table in ("query_metrics", "relevance_marks", "queries"):
+        conn.execute(f"DELETE FROM {table}")

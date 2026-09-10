@@ -1,130 +1,261 @@
+"""Модуль индексирования документов.
+
+Строит поисковые образы документов (ПОД) и инвертированный индекс.
+
+Веса вычисляются строго по методичке:
+
+    B_i   = log(N / P_i)        — инверсная частота термина       (формула 1.5)
+    A_i^j = Q_i^j * B_i         — вес термина i в документе j      (формула 1.6)
+
+где N — число документов в коллекции, P_i — число документов с термином i,
+Q_i^j — частота термина i в документе j.
+
+Индексация разделена на две фазы:
+
+1. чтение файлов, токенизация и подсчёт частот — выполняется без обращения
+   к базе данных, поэтому не удерживает блокировку;
+2. запись — одна короткая транзакция ``BEGIN IMMEDIATE``. Если что-то пойдёт
+   не так, изменения откатятся и коллекция останется целой. Раньше удаление
+   и заполнение не были атомарными, и сбой во время переиндексации оставлял
+   базу пустой.
+
+Идентификаторы документов и терминов назначаются явно в детерминированном
+порядке (документы — по имени файла, термины — по алфавиту), поэтому
+переиндексация одной и той же коллекции даёт одинаковые id и одинаковую
+выдачу, а оценки качества остаются воспроизводимыми.
+"""
+
+from __future__ import annotations
+
+import logging
 import math
-from collections import Counter, defaultdict
+import time
+from collections import Counter
+from dataclasses import dataclass, field
 
 from . import config
-from .collector import collect_documents
-from .text import process_text
-from .db import get_conn
+from .collector import RawDocument, collect_documents
+from .db import connect, reset_all, transaction
+from .text import analyze
+
+log = logging.getLogger(__name__)
+
+#: Размер порции для пакетной вставки в SQLite.
+_INSERT_CHUNK = 5000
 
 
-def index_all() -> None:
-    conn = get_conn()
+@dataclass(frozen=True, slots=True)
+class IndexStats:
+    """Сводка о построенном индексе — для журнала и страницы состояния."""
 
-    # Полная переиндексация.
-    # Старые документы, запросы и оценки удаляются,
-    # так как после переиндексации идентификаторы документов меняются.
-    # ВАЖНО: удаляем сначала дочерние таблицы (с внешними ключами), потом родительские!
-    conn.execute("DELETE FROM postings")
-    conn.execute("DELETE FROM relevance_marks")
-    conn.execute("DELETE FROM query_metrics")
-    conn.execute("DELETE FROM queries")
-    conn.execute("DELETE FROM documents")
-    conn.execute("DELETE FROM terms")
-    
-    conn.execute(
-        """
-        UPDATE metrics_summary
-        SET total_queries = 0,
-            sum_recall = 0,
-            sum_precision = 0,
-            sum_avg_prec = 0,
-            sum_p5 = 0,
-            sum_p10 = 0,
-            sum_r_prec = 0,
-            sum_pr_curve = '[]'
-        WHERE id = 1
-        """
+    documents: int = 0
+    terms: int = 0
+    postings: int = 0
+    seconds: float = 0.0
+
+    @property
+    def is_empty(self) -> bool:
+        return self.documents == 0
+
+    def describe(self) -> str:
+        return (
+            f"{self.documents} документов, {self.terms} терминов, "
+            f"{self.postings} постингов за {self.seconds:.2f} с"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Фаза 1: анализ документов (без базы данных)
+# ---------------------------------------------------------------------------
+@dataclass(slots=True)
+class ParsedDocument:
+    """Документ с готовым поисковым образом."""
+
+    raw: RawDocument
+    doc_id: int
+    term_freq: Counter[str]     # Q_i^j по каждому термину
+    words: int                  # число значимых слов в документе
+
+
+@dataclass(slots=True)
+class Analysis:
+    """Результат разбора коллекции."""
+
+    documents: list[ParsedDocument] = field(default_factory=list)
+    doc_freq: Counter[str] = field(default_factory=Counter)   # P_i
+    display_form: dict[str, str] = field(default_factory=dict)  # стемма -> показываемое слово
+
+    @property
+    def total(self) -> int:
+        return len(self.documents)
+
+
+@dataclass(frozen=True, slots=True)
+class Dictionary:
+    """Словарь терминов с весами."""
+
+    idf: dict[str, float]           # B_i
+    term_ids: dict[str, int]
+    display_form: dict[str, str]
+    total_docs: int                 # N
+
+
+def build_index() -> IndexStats:
+    """Полностью перестраивает индекс по содержимому каталога коллекции."""
+    started = time.perf_counter()
+
+    documents = collect_documents(config.COLLECTION_PATH)
+    if not documents:
+        log.warning("Коллекция пуста: %s", config.COLLECTION_PATH)
+        with connect() as conn, transaction(conn):
+            reset_all(conn)
+        return IndexStats(seconds=time.perf_counter() - started)
+
+    analysis = analyze_documents(documents)
+    dictionary = build_dictionary(analysis)
+    stats = write_index(analysis, dictionary)
+
+    log.info("Индекс построен: %s", stats.describe())
+    return IndexStats(
+        documents=stats.documents,
+        terms=stats.terms,
+        postings=stats.postings,
+        seconds=time.perf_counter() - started,
     )
-    conn.commit()
 
-    docs = collect_documents(config.COLLECTION_PATH)
-    n_docs = len(docs)
 
-    if n_docs == 0:
-        conn.close()
-        return
+def analyze_documents(documents: list[RawDocument]) -> Analysis:
+    """Разбирает тексты: частоты терминов в документах и документные частоты."""
+    analysis = Analysis()
 
-    doc_freq = defaultdict(int)
-    term_original = {}
-    parsed_docs = []
+    for doc_id, raw in enumerate(documents, start=1):
+        term_freq: Counter[str] = Counter()
 
-    for doc in docs:
-        pairs = process_text(doc["text"])
-        tf = Counter(stem for _, stem in pairs)
+        for original, term in analyze(raw.text):
+            term_freq[term] += 1
+            _remember_display_form(analysis.display_form, term, original)
 
-        for stem in tf:
-            doc_freq[stem] += 1
+        analysis.documents.append(
+            ParsedDocument(
+                raw=raw,
+                doc_id=doc_id,
+                term_freq=term_freq,
+                words=sum(term_freq.values()),
+            )
+        )
+        analysis.doc_freq.update(term_freq.keys())
 
-        for original, stem in pairs:
-            if stem not in term_original:
-                term_original[stem] = original
+    return analysis
 
-        parsed_docs.append((doc, tf))
 
-    term_rows = []
-    idf = {}
+def _remember_display_form(forms: dict[str, str], term: str, original: str) -> None:
+    """Запоминает написание термина для показа пользователю.
 
-    for term, df in doc_freq.items():
-        value = math.log(n_docs / df)
-        idf[term] = value
-        term_rows.append((term, df, value))
+    Предпочтение отдаётся форме с заглавной буквы: в списке ключевых слов
+    «Holmes» выглядит естественнее, чем «holmes».
+    """
+    current = forms.get(term)
+    if current is None or (not current[0].isupper() and original[0].isupper()):
+        forms[term] = original
 
-    conn.executemany(
-        "INSERT INTO terms (term, df, idf) VALUES (?, ?, ?)",
-        term_rows
-    )
-    conn.commit()
 
-    term_ids = {
-        row["term"]: row["id"]
-        for row in conn.execute("SELECT id, term FROM terms")
+def build_dictionary(analysis: Analysis) -> Dictionary:
+    """Строит словарь: инверсные частоты B_i и идентификаторы терминов."""
+    total_docs = analysis.total
+
+    # Формула 1.5. Термин, встречающийся во всех документах, получает B_i = 0:
+    # он не влияет на порядок выдачи, но по-прежнему участвует в логическом
+    # отборе документов, что соответствует модели поиска из методички.
+    idf = {
+        term: math.log(total_docs / df) for term, df in analysis.doc_freq.items()
     }
 
-    post_rows = []
+    # Алфавитный порядок делает идентификаторы терминов детерминированными.
+    term_ids = {
+        term: index for index, term in enumerate(sorted(analysis.doc_freq), start=1)
+    }
 
-    for doc, tf in parsed_docs:
-        cur = conn.execute(
-            """
-            INSERT INTO documents (title, text, path, date, time, keywords)
-            VALUES (?, ?, ?, ?, ?, ?)
-            """,
-            (
-                doc["title"],
-                doc["text"],
-                doc["path"],
-                doc["date"],
-                doc["time"],
-                "",
-            )
-        )
-        doc_id = cur.lastrowid
-
-        top_terms = sorted(
-            tf.items(),
-            key=lambda item: item[1] * idf[item[0]],
-            reverse=True
-        )[:config.TOP_KEYWORDS]
-
-        keywords = ", ".join(
-            term_original.get(stem, stem)
-            for stem, _ in top_terms
-        )
-
-        conn.execute(
-            "UPDATE documents SET keywords = ? WHERE id = ?",
-            (keywords, doc_id)
-        )
-
-        for stem, count in tf.items():
-            weight = count * idf[stem]
-            post_rows.append(
-                (term_ids[stem], doc_id, count, weight)
-            )
-
-    conn.executemany(
-        "INSERT INTO postings (term_id, doc_id, tf, weight) VALUES (?, ?, ?, ?)",
-        post_rows
+    return Dictionary(
+        idf=idf,
+        term_ids=term_ids,
+        display_form=analysis.display_form,
+        total_docs=total_docs,
     )
 
-    conn.commit()
-    conn.close()
+
+# ---------------------------------------------------------------------------
+# Фаза 2: запись индекса (одна транзакция)
+# ---------------------------------------------------------------------------
+def write_index(analysis: Analysis, dictionary: Dictionary) -> IndexStats:
+    """Записывает документы, словарь и postings одной атомарной транзакцией."""
+    idf, term_ids = dictionary.idf, dictionary.term_ids
+
+    doc_rows = [
+        (
+            document.doc_id,
+            document.raw.title,
+            document.raw.text,
+            document.raw.path,
+            document.raw.date,
+            document.raw.time,
+            document.words,
+            keywords_of(document, idf, dictionary.display_form),
+        )
+        for document in analysis.documents
+    ]
+
+    term_rows = [
+        (term_ids[term], term, df, idf[term])
+        for term, df in analysis.doc_freq.items()
+    ]
+
+    posting_rows = [
+        (term_ids[term], document.doc_id, freq, freq * idf[term])
+        for document in analysis.documents
+        for term, freq in document.term_freq.items()
+    ]
+
+    with connect() as conn, transaction(conn):
+        reset_all(conn)
+        _insert_many(
+            conn,
+            """
+            INSERT INTO documents (id, title, text, path, date, time, words, keywords)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            doc_rows,
+        )
+        _insert_many(
+            conn,
+            "INSERT INTO terms (id, term, df, idf) VALUES (?, ?, ?, ?)",
+            term_rows,
+        )
+        _insert_many(
+            conn,
+            "INSERT INTO postings (term_id, doc_id, tf, weight) VALUES (?, ?, ?, ?)",
+            posting_rows,
+        )
+
+    return IndexStats(
+        documents=len(doc_rows), terms=len(term_rows), postings=len(posting_rows)
+    )
+
+
+def keywords_of(
+    document: ParsedDocument, idf: dict[str, float], display_form: dict[str, str]
+) -> str:
+    """Ключевые слова документа — термины с наибольшим весом A_i^j (формула 1.6)."""
+    ranked = sorted(
+        document.term_freq.items(),
+        key=lambda item: (item[1] * idf[item[0]], item[0]),
+        reverse=True,
+    )
+    return ", ".join(
+        display_form.get(term, term) for term, _ in ranked[: config.TOP_KEYWORDS]
+    )
+
+
+def _insert_many(conn, sql: str, rows: list[tuple]) -> None:
+    """Пакетная вставка порциями, чтобы не раздувать память на больших коллекциях."""
+    for start in range(0, len(rows), _INSERT_CHUNK):
+        conn.executemany(sql, rows[start : start + _INSERT_CHUNK])

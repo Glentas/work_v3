@@ -1,21 +1,33 @@
 [project]
 name = "lab1-search"
-version = "0.1.0"
-description = "Add your description here"
+version = "1.0.0"
+description = "Учебная информационно-поисковая система: логический поиск, ранжирование TF-IDF и оценка качества по метрикам РОМИП'2004"
 readme = "README.md"
 authors = [
     { name = "AniGleb", email = "ani_gleb@tutamail.com" }
 ]
-requires-python = ">=3.14"
+# NLTK требуется только для стеммера Портера (чистый Python, без загрузки
+# корпусов), поэтому достаточно любого поддерживаемого релиза 3.11+.
+requires-python = ">=3.11"
 dependencies = [
-    "fastapi>=0.141.1",
-    "jinja2>=3.1.6",
-    "nltk>=3.10.3",
-    "pypdf>=6.16.2",
-    "python-multipart>=0.0.32",
-    "uvicorn[standard]>=0.52.4",
+    "fastapi>=0.115",
+    "jinja2>=3.1",
+    "nltk>=3.9",
+    "pypdf>=5.0",
+    "python-multipart>=0.0.12",
+    "uvicorn[standard]>=0.32",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.27",
+    "pytest>=8.3",
 ]
 
 [build-system]
 requires = ["uv_build>=0.12.8,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

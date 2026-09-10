@@ -1,117 +1,190 @@
 {% extends "base.html" %}
 
-{% block title %}Поиск{% endblock %}
+{% block title %}Поиск — ИПС{% endblock %}
 
 {% block content %}
 <div class="card">
     <h1>Поиск</h1>
 
     <form method="get" action="/search" class="search-form">
-        <input type="text" name="q" value="{{ params.q }}" placeholder="Введите запрос на английском" required>
+        <input type="text" name="q" value="{{ params.q }}"
+               placeholder="Запрос на английском, например: sherlock holmes"
+               autocomplete="off" autofocus required>
 
-        <label class="checkbox">
-            <input type="checkbox" name="all_words" value="true" {% if params.all_words %}checked{% endif %}>
-            Все слова вместе
-        </label>
+        <div class="filters">
+            {# Радиокнопки вместо чекбокса: снятый чекбокс вообще не отправляет
+               параметр, и сервер подставлял значение по умолчанию (AND),
+               из-за чего режим OR был недостижим из интерфейса. #}
+            <div class="segmented" role="radiogroup" aria-label="Логика поиска">
+                <input type="radio" id="mode-and" name="all_words" value="true"
+                       {% if params.all_words %}checked{% endif %}>
+                <label for="mode-and">Все слова (AND)</label>
 
-        <input type="date" name="date_start" value="{{ params.date_start }}">
-        <input type="date" name="date_end" value="{{ params.date_end }}">
+                <input type="radio" id="mode-or" name="all_words" value="false"
+                       {% if not params.all_words %}checked{% endif %}>
+                <label for="mode-or">Любое слово (OR)</label>
+            </div>
 
-        <button class="btn" type="submit">Найти</button>
+            <div class="filter-group">
+                <label for="date_start">Дата с</label>
+                <input type="date" id="date_start" name="date_start" value="{{ params.date_start }}">
+            </div>
+
+            <div class="filter-group">
+                <label for="date_end">по</label>
+                <input type="date" id="date_end" name="date_end" value="{{ params.date_end }}">
+            </div>
+
+            <button class="btn" type="submit">Найти</button>
+        </div>
     </form>
 
-    <p class="muted">
-        Для исключения слова используйте минус: <code>-word</code>.
-        Поиск выполняется по английским документам.
+    <p class="muted" style="margin-bottom:0">
+        Минус исключает слово: <code>holmes -watson</code>. Подробнее — в
+        <a href="/help">справке</a>.
     </p>
 </div>
 
-{% if results is defined and results is not none %}
-    {% if results|length == 0 %}
-        <div class="card">Ничего не найдено.</div>
+{% if request.query_params.get('reindexed') %}
+    <div class="banner banner-ok">
+        <span class="banner-icon">✓</span>
+        <span>Коллекция переиндексирована. Прежние отметки и оценки удалены.</span>
+    </div>
+{% endif %}
+
+{% if outcome is not none %}
+
+    {% if outcome.fallback %}
+        <div class="banner banner-warn">
+            <span class="banner-icon">!</span>
+            <span>
+                Документов со <strong>всеми</strong> словами запроса не найдено —
+                показаны документы с частью слов, лучшие сверху.
+            </span>
+        </div>
+    {% endif %}
+
+    {% if outcome.unknown_terms %}
+        <div class="banner banner-info">
+            <span class="banner-icon">i</span>
+            <span>
+                В коллекции нет слов: <strong>{{ outcome.unknown_terms|join(', ') }}</strong>.
+            </span>
+        </div>
+    {% endif %}
+
+    {% if total == 0 %}
+        <div class="card">
+            <h2>Ничего не найдено</h2>
+            <p class="muted">
+                Попробуйте режим <strong>OR</strong>, уберите часть слов
+                или проверьте написание.
+            </p>
+        </div>
     {% else %}
+
         <div class="card" id="search-page"
-             data-q="{{ params.q }}"
-             data-all-words="{{ 'true' if params.all_words else 'false' }}"
-             data-date-start="{{ params.date_start }}"
-             data-date-end="{{ params.date_end }}"
-             data-query-id="{{ query_id }}">
+             data-params='{{ params.model_dump_json()|forceescape }}'
+             data-query-id="{{ query_id }}"
+             data-total="{{ total }}">
 
             <div class="toolbar">
-                <label class="checkbox">
-                    <input type="checkbox" id="select-all">
-                    Выбрать все результаты
+                <span class="badge">{{ 'AND' if outcome.mode == 'and' else 'OR' }}</span>
+                <span>Найдено: <strong>{{ total }}</strong></span>
+
+                <label class="checkbox"
+                       title="Три состояния: галочка — отмечены все документы страницы,
+черта — отмечена часть, пусто — ни одного. Нажмите, чтобы отметить всю страницу.">
+                    <input type="checkbox" id="select-page">
+                    <span id="select-page-label">Все на странице</span>
                 </label>
 
-                <label class="checkbox">
-                    <input type="checkbox" id="select-page">
-                    Выбрать все на этой странице
+                <label class="checkbox" title="Отметить всю выдачу целиком">
+                    <input type="checkbox" id="select-all">
+                    Все результаты
                 </label>
+
+                <span class="spacer"></span>
+
+                <span class="progress-note">
+                    Размечено <strong id="judged-count">{{ checked_count }}</strong>
+                    из {{ total }}
+                </span>
 
                 <button class="btn" id="save-metrics">Сохранить оценку</button>
-                <span id="save-message" class="muted"></span>
             </div>
+
+            <div id="save-message"></div>
 
             <div class="table-wrap">
                 <table class="table">
                     <thead>
                     <tr>
-                        <th></th>
-                        <th>#</th>
+                        <th class="check" title="Отметить документ как релевантный">
+                            <span class="muted">✓</span>
+                        </th>
+                        <th class="pos">#</th>
                         <th>Документ</th>
                         <th>Фрагмент</th>
                         <th>Слова запроса</th>
                         <th>Ключевые слова</th>
                         <th>Дата</th>
-                        <th>Ранг</th>
+                        <th class="num">Ранг</th>
                     </tr>
                     </thead>
 
                     <tbody id="results-body">
-                    {% for r in results %}
+                    {% for hit in outcome.hits %}
                         <tr>
-                            <td>
-                                <input type="checkbox"
-                                       class="result-checkbox"
-                                       data-doc-id="{{ r.doc_id }}"
-                                       {% if r.doc_id in checked_ids %}checked{% endif %}>
+                            <td class="check">
+                                <input type="checkbox" class="result-checkbox"
+                                       data-doc-id="{{ hit.doc_id }}"
+                                       {% if hit.doc_id in checked_ids %}checked{% endif %}
+                                       aria-label="Релевантен для запроса">
                             </td>
-                            <td>{{ (page - 1) * per_page + loop.index }}</td>
-                            <td>
-                                <a href="/documents/{{ r.doc_id }}" target="_blank">{{ r.title }}</a>
+                            <td class="pos">{{ hit.position }}</td>
+                            <td class="title-cell">
+                                <a href="/documents/{{ hit.doc_id }}" target="_blank" rel="noopener">
+                                    {{ hit.title }}
+                                </a>
                             </td>
-                            <td class="snippet">{{ r.snippet_html|safe }}</td>
-                            <td>{{ r.matched_words|join(', ') }}</td>
-                            <td>{{ r.keywords }}</td>
-                            <td>{{ r.date }}</td>
-                            <td>{{ "%.4f"|format(r.rank) }}</td>
+                            <td class="snippet">{{ hit.snippet_html|safe }}</td>
+                            <td>
+                                <div class="tags">
+                                    {% for word in hit.matched_words %}
+                                        <span class="tag">{{ word }}</span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td class="muted">{{ hit.keywords }}</td>
+                            <td class="muted">{{ hit.date }}</td>
+                            <td class="num">{{ '%.4f'|format(hit.rank) }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
             </div>
 
-            {% if total_pages > 1 %}
-                {# Собираем query-строку вручную, заменяя пробелы на + для корректного URL #}
-                {% set qs = 'q=' ~ params.q|replace(' ', '+') ~ '&all_words=' ~ ('true' if params.all_words else 'false') ~ '&date_start=' ~ params.date_start ~ '&date_end=' ~ params.date_end %}
-                
-                <div class="pagination">
-                    {% if page > 1 %}
-                        <a href="/search?{{ qs }}&page={{ page - 1 }}">
-                            Назад
-                        </a>
-                    {% endif %}
+            {% set base_qs = 'q=' ~ params.q|urlencode ~ '&all_words=' ~ ('true' if params.all_words else 'false')
+                             ~ '&date_start=' ~ params.date_start ~ '&date_end=' ~ params.date_end %}
 
-                    <span>Страница {{ page }} из {{ total_pages }}. Всего результатов: {{ total }}.</span>
+            <div class="pagination">
+                {% if page > 1 %}
+                    <a href="/search?{{ base_qs }}&page={{ page - 1 }}">← Назад</a>
+                {% else %}
+                    <span class="disabled">← Назад</span>
+                {% endif %}
 
-                    {% if page < total_pages %}
-                        <a href="/search?{{ qs }}&page={{ page + 1 }}">
-                            Вперёд
-                        </a>
-                    {% endif %}
-                </div>
-            {% endif %}
+                <span>Страница {{ page }} из {{ total_pages }}</span>
+
+                {% if page < total_pages %}
+                    <a href="/search?{{ base_qs }}&page={{ page + 1 }}">Вперёд →</a>
+                {% else %}
+                    <span class="disabled">Вперёд →</span>
+                {% endif %}
+            </div>
         </div>
+
     {% endif %}
 {% endif %}
 {% endblock %}

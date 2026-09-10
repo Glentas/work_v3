@@ -1,24 +1,35 @@
 {% extends "base.html" %}
 
-{% block title %}Документ{% endblock %}
+{% block title %}{{ doc['title'][:60] }} — Документ{% endblock %}
 
 {% block content %}
 <div class="card">
     <h1>{{ doc['title'] }}</h1>
 
-    <p class="muted">
-        Дата добавления: {{ doc['date'] }} {{ doc['time'] }}
-    </p>
+    <div class="document-meta">
+        <span>Идентификатор: <strong>#{{ doc['id'] }}</strong></span>
+        <span>Добавлен: <strong>{{ doc['date'] }} {{ doc['time'] }}</strong></span>
+        <span>Значимых слов: <strong>{{ doc['words'] }}</strong></span>
+        <span>Источник: <code>{{ doc['path'] }}</code></span>
+    </div>
 
     <p>
-        <strong>Ключевые слова:</strong>
-        {{ doc['keywords'] }}
+        <strong>Ключевые слова</strong>
+        <span class="muted">(термины с наибольшим весом A<sub>i</sub><sup>j</sup> = Q<sub>i</sub><sup>j</sup> · B<sub>i</sub>)</span>:
     </p>
+    <div class="tags" style="margin-bottom:16px">
+        {% for keyword in doc['keywords'].split(', ') if keyword %}
+            <span class="tag">{{ keyword }}</span>
+        {% endfor %}
+    </div>
 
     <p>
-        <a class="btn" href="/documents/{{ doc['id'] }}/download">Скачать документ</a>
+        <a class="btn btn-small" href="/documents/{{ doc['id'] }}/download">
+            Скачать документ
+        </a>
     </p>
 
+    <h2>Полный текст</h2>
     <div class="document-text">{{ doc['text'] }}</div>
 </div>
 {% endblock %}
