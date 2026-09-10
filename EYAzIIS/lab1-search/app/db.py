@@ -1,13 +1,3 @@
-"""Слой доступа к данным.
-
-Все обращения к SQLite идут через контекстный менеджер :func:`connect`,
-поэтому соединения не утекают даже при исключениях.
-
-База открывается в режиме WAL с увеличенным таймаутом ожидания блокировки —
-это обязательное условие для сервера в локальной сети, где отметки
-релевантности может одновременно ставить несколько клиентов.
-"""
-
 from __future__ import annotations
 
 import json
@@ -29,19 +19,7 @@ _PR_CURVE_POINTS = 11
 # ---------------------------------------------------------------------------
 @contextmanager
 def connect() -> Iterator[sqlite3.Connection]:
-    """Открывает соединение и гарантированно закрывает его на выходе.
-
-    ``isolation_level=None`` включает режим autocommit: одиночные операторы
-    фиксируются сразу, а многооператорные атомарные блоки (переиндексация)
-    управляются явно через :func:`transaction`.
-
-    ``check_same_thread=False`` обязателен для связки с FastAPI: фреймворк
-    выполняет вход в зависимость, тело обработчика и выход из зависимости
-    в разных потоках своего пула, а sqlite3 по умолчанию запрещает трогать
-    соединение из «чужого» потока. Это безопасно, потому что каждое соединение
-    принадлежит одному запросу и между запросами не разделяется, а параллельный
-    доступ к файлу базы обеспечивает режим WAL.
-    """
+    """Открывает соединение и гарантированно закрывает его на выходе"""
     conn = sqlite3.connect(
         config.DB_PATH,
         timeout=config.DB_BUSY_TIMEOUT_MS / 1000,
@@ -59,11 +37,8 @@ def connect() -> Iterator[sqlite3.Connection]:
 
 @contextmanager
 def transaction(conn: sqlite3.Connection) -> Iterator[sqlite3.Connection]:
-    """Атомарный блок: либо фиксируются все изменения, либо ни одного.
+    """Атомарный блок: либо фиксируются все изменения, либо ни одного"""
 
-    ``BEGIN IMMEDIATE`` сразу захватывает блокировку записи, поэтому
-    параллельный клиент не сможет вклиниться в середину переиндексации.
-    """
     conn.execute("BEGIN IMMEDIATE")
     try:
         yield conn
@@ -81,9 +56,6 @@ def init_db() -> None:
         conn.execute("PRAGMA journal_mode = WAL")
 
 
-# ---------------------------------------------------------------------------
-# Вспомогательное
-# ---------------------------------------------------------------------------
 def _in_clause(values: Sequence) -> str:
     """Плейсхолдеры для оператора IN. Значения всегда передаются параметрами."""
     return ",".join("?" * len(values))
@@ -93,9 +65,6 @@ def _now() -> str:
     return datetime.now().isoformat(timespec="seconds")
 
 
-# ---------------------------------------------------------------------------
-# Документы
-# ---------------------------------------------------------------------------
 def get_document(conn: sqlite3.Connection, doc_id: int) -> sqlite3.Row | None:
     return conn.execute(
         "SELECT * FROM documents WHERE id = ?", (doc_id,)
@@ -106,9 +75,6 @@ def count_documents(conn: sqlite3.Connection) -> int:
     return conn.execute("SELECT COUNT(*) FROM documents").fetchone()[0]
 
 
-# ---------------------------------------------------------------------------
-# Запросы и экспертные отметки
-# ---------------------------------------------------------------------------
 def find_query_id(conn: sqlite3.Connection, params: SearchParams) -> int | None:
     row = conn.execute(
         "SELECT id FROM queries WHERE params_json = ?", (params.key,)
@@ -141,11 +107,7 @@ def set_relevance(
     doc_ids: Iterable[int],
     relevant: bool,
 ) -> None:
-    """Отмечает документы как релевантные либо снимает отметку.
-
-    Отметка хранится фактом существования строки, поэтому «снятие» — это
-    удаление, и отдельный столбец relevant не нужен.
-    """
+    """Отмечает документы как релевантные либо снимает отметку"""
     ids = list(dict.fromkeys(doc_ids))
     if not ids:
         return
@@ -169,13 +131,7 @@ def clear_relevance(conn: sqlite3.Connection, query_id: int) -> None:
 def mark_relevance(
     conn: sqlite3.Connection, params: SearchParams, doc_ids: list[int], relevant: bool
 ) -> int:
-    """Сохраняет отметки и возвращает id запроса, переживая переиндексацию.
-
-    Переиндексация удаляет запросы и отметки, поэтому запись, начатая до неё,
-    может нарушить внешний ключ. В этом случае операция повторяется один раз:
-    запрос пересоздаётся уже в новом индексе. Если и повтор не удался,
-    исключение передаётся вызывающему слою.
-    """
+    """Сохраняет отметки и возвращает id запроса, переживая переиндексацию"""
     try:
         query_id = ensure_query(conn, params)
         set_relevance(conn, query_id, doc_ids, relevant)
@@ -190,12 +146,7 @@ def mark_relevance(
 # Метрики качества
 # ---------------------------------------------------------------------------
 def save_metrics(conn: sqlite3.Connection, query_id: int, m: Metrics) -> None:
-    """Сохраняет оценку запроса, заменяя предыдущую.
-
-    Сводные показатели не накапливаются инкрементально, а вычисляются
-    заново из этой таблицы (см. :func:`metrics_summary`), поэтому повторное
-    сохранение оценки не может привести к расхождению сумм.
-    """
+    """Сохраняет оценку запроса, заменяя предыдущую"""
     conn.execute(
         """
         INSERT INTO query_metrics (
@@ -267,7 +218,7 @@ def metrics_summary(conn: sqlite3.Connection) -> MetricsSummary:
             avg_pr_curve=tuple([0.0] * _PR_CURVE_POINTS),
         )
 
-    # Микроусреднение (РОМИП'2004, п. 1.2): метрика считается по суммарным
+    # Микроусреднение: метрика считается по суммарным
     # количествам документов матрицы классификации, а не как среднее запросов.
     a = row["found_relevant"] or 0        # релевантные, найденные системой
     ab = row["total_found"] or 0          # a + b: все найденные
@@ -325,11 +276,7 @@ def pr_curve(conn: sqlite3.Connection, query_id: int) -> list[float]:
 
 
 def pr_curve_data(conn: sqlite3.Connection, query_id: int) -> dict | None:
-    """Данные для графика полнота/точность: кривая и фактические срезы.
-
-    Срезы восстанавливаются из сохранённых позиций релевантных документов,
-    поэтому отдельный столбец для них не нужен.
-    """
+    """Данные для графика полнота/точность: кривая и фактические срезы"""
     from .evaluation import precision_recall_cuts
 
     row = conn.execute(
@@ -363,12 +310,7 @@ def pr_curve_data(conn: sqlite3.Connection, query_id: int) -> dict | None:
 
 
 def reset_all(conn: sqlite3.Connection) -> None:
-    """Полностью очищает базу перед переиндексацией.
-
-    Идентификаторы документов после переиндексации меняются, поэтому
-    разметка релевантности и сохранённые оценки теряют смысл и удаляются.
-    Вызывается только внутри транзакции :func:`transaction`.
-    """
+    """Полностью очищает базу перед переиндексацией"""
     for table in (
         "query_metrics",
         "relevance_marks",
@@ -393,9 +335,6 @@ def index_info(conn: sqlite3.Connection) -> dict[str, int]:
 
 
 def clear_evaluations(conn: sqlite3.Connection) -> None:
-    """Удаляет разметку и сохранённые оценки, не трогая индекс.
-
-    Используется тестами, чтобы проверки не зависели от порядка выполнения.
-    """
+    """Удаляет разметку и сохранённые оценки, не трогая индекс"""
     for table in ("query_metrics", "relevance_marks", "queries"):
         conn.execute(f"DELETE FROM {table}")
