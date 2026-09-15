@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Распознавание — распознавание языка текста{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Распознавание языка</h1>
+    <p class="muted subtitle">
+        Система читает документы из папки коллекции, строит поисковый образ
+        документа и сравнивает его с образами языков тремя методами.
+        Выберите набор и нажмите «Распознать».
+    </p>
+
+    <div class="banner banner-ok">
+        <span class="banner-icon">→</span>
+        <span>
+            <strong>Коротко:</strong> выберите набор → «Распознать» →
+            откройте «Результаты»: таблица документов со ссылками, сводная
+            статистика, сравнение методов, экспорт и печать.
+        </span>
+    </div>
+
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Набор документов</th>
+                <th>Документов</th>
+                <th>Состояние</th>
+                <th>Точность (N-грамм / алфавитный / нейросетевой)</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for s in suites %}
+            <tr>
+                <td><strong>{{ s.name }}</strong></td>
+                <td>{{ s.count }}</td>
+                <td>{{ 'распознан' if s.done else 'ещё нет' }}</td>
+                <td>
+                    {% if s.reports %}
+                        {% for m in methods %}
+                            {{ '%.0f%%' | format((s.reports[m].accuracy or 0) * 100) }}{{ ' / ' if not loop.last }}
+                        {% endfor %}
+                    {% else %}—{% endif %}
+                </td>
+                <td class="actions">
+                    <form method="post" action="/recognize" class="inline-form">
+                        <input type="hidden" name="suite" value="{{ s.name }}">
+                        <button type="submit" class="btn btn-small">Распознать</button>
+                    </form>
+                    <a class="btn btn-small btn-secondary" href="/results?suite={{ s.name }}">Результаты</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5">Коллекция пуста. Соберите её: <code>scripts/build_corpus.py</code>,
+                затем <code>scripts/make_test_docs.py</code>.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Проверить свой текст</h2>
+    <p class="muted">Вставьте текст на французском или английском — все три метода ответят независимо от коллекции.</p>
+    <form method="post" action="/text" class="stack">
+        <textarea name="text" rows="5" placeholder="Например: La forêt près de la rivière est très belle…">{{ adhoc.text if adhoc else '' }}</textarea>
+        <button type="submit" class="btn">Распознать текст</button>
+    </form>
+
+    {% if adhoc and adhoc.results %}
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+            <tr><th>Метод</th><th>Язык</th><th>Расстояние</th><th>Все языки по расстоянию</th><th>Время</th></tr>
+            </thead>
+            <tbody>
+            {% for r in adhoc.results %}
+            <tr>
+                <td>{{ method_names[r.method] }}</td>
+                <td><strong>{{ lang_names[r.lang] if r.lang else '—' }}</strong></td>
+                <td>{{ '%.4f' | format(r.distance) if r.lang else '—' }}</td>
+                <td class="muted">
+                    {% for lang, d in r.ranked %}{{ lang_names[lang] }}: {{ '%.4f' | format(d) }}{{ ', ' if not loop.last }}{% endfor %}
+                </td>
+                <td>{{ '%.3f' | format(r.elapsed_ms) }} мс</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

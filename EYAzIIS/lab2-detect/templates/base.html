@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Распознавание языка текста{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563eb'/><text x='16' y='23' font-size='18' text-anchor='middle' fill='white' font-family='sans-serif'>Я</text></svg>">
+</head>
+<body>
+{% set path = request.url.path %}
+
+<header class="navbar">
+    <div class="container nav-inner">
+        <a class="brand" href="/">
+            <span class="brand-mark">Я</span>
+            Распознавание языка текста
+        </a>
+        <nav class="nav-links">
+            <a href="/" class="{{ 'active' if path == '/' }}">Распознавание</a>
+            <a href="/results?suite=main" class="{{ 'active' if path == '/results' }}">Результаты</a>
+            <a href="/help" class="{{ 'active' if path == '/help' }}">Справка</a>
+            <form method="post" action="/rescan" class="inline-form"
+                  onsubmit="return confirm('Перечитать коллекцию и перестроить профили языков?');">
+                <button type="submit" class="btn btn-small btn-secondary">Перечитать коллекцию</button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <span>Вариант 7: французский / английский · HTML · N-грамм, алфавитный, нейросетевой</span>
+        <span class="spacer"></span>
+        <a href="/help">Справка</a>
+    </div>
+</footer>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

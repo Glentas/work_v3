@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}{{ doc.name }} — документ{% endblock %}
+
+{% block content %}
+<div class="card no-print">
+    <h1>Документ {{ doc.name }}</h1>
+    <div class="actions">
+        <a class="btn" href="/raw/{{ doc.id }}">Открыть исходный HTML</a>
+        <a class="btn btn-secondary" href="/results?suite={{ suite }}">К результатам</a>
+        <button type="button" class="btn btn-secondary" onclick="window.print()">Печать</button>
+    </div>
+</div>
+
+<div class="cards-row">
+    <div class="card stat">
+        <div class="stat-title">Истинный язык</div>
+        <div class="stat-value">{{ lang_names[doc.lang_true] }}</div>
+        <div class="muted">из имени файла, для оценки точности</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-title">Видимый текст</div>
+        <div class="stat-value">{{ doc.chars }}</div>
+        <div class="muted">знаков после шага 1 (предобработки)</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-title">Кодировка файла</div>
+        <div class="stat-value small">{{ doc.encoding }}</div>
+        <div class="muted">определена на шаге 1</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Решения методов</h2>
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+            <tr><th>Метод</th><th>Ответ</th><th>Расстояние</th><th>Все языки (по возрастанию расстояния)</th><th>Время</th></tr>
+            </thead>
+            <tbody>
+            {% for r in doc_results %}
+            <tr>
+                <td>{{ method_names[r.method] }}</td>
+                <td>
+                    <span class="badge {{ 'badge-ok' if r.lang == doc.lang_true else 'badge-bad' }}">
+                        {{ lang_names[r.lang] if r.lang else '—' }}
+                    </span>
+                </td>
+                <td>{{ '%.4f' | format(r.distance) if r.lang else '—' }}</td>
+                <td class="muted">
+                    {% for lang, d in r.ranked %}{{ lang_names[lang] }}: {{ '%.4f' | format(d) }}{{ '; ' if not loop.last }}{% endfor %}
+                    {% if r.error %}<span class="badge badge-warn">{{ r.error }}</span>{% endif %}
+                </td>
+                <td>{{ '%.3f' | format(r.elapsed_ms) }} мс</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <p class="muted">
+        Языком считается категория с минимальным расстоянием до поискового образа языка.
+    </p>
+</div>
+
+<div class="card">
+    <h2>Видимый текст (после предобработки)</h2>
+    <article class="doc-text">{{ visible }}</article>
+</div>
+{% endblock %}

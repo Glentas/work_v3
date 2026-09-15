@@ -1,0 +1,115 @@
+/* Оформление системы распознавания языка текста.
+   Локальный файл: внешних зависимостей нет, система работает без интернета. */
+
+:root {
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --ink: #16213a;
+    --muted: #64708a;
+    --line: #dfe4ef;
+    --accent: #2563eb;
+    --accent-dark: #1d4ed8;
+    --ok: #15803d;
+    --ok-bg: #ecfdf5;
+    --bad: #b91c1c;
+    --bad-bg: #fef2f2;
+    --warn: #b45309;
+    --warn-bg: #fffbeb;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 15px/1.55 "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+}
+
+.container { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+
+/* --- шапка и подвал ------------------------------------------------------ */
+.navbar { background: var(--card); border-bottom: 1px solid var(--line); }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--ink); text-decoration: none; }
+.brand-mark {
+    width: 30px; height: 30px; border-radius: 8px; background: var(--accent);
+    color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700;
+}
+.nav-links { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.nav-links a { color: var(--muted); text-decoration: none; }
+.nav-links a.active, .nav-links a:hover { color: var(--accent); }
+
+.footer { margin-top: 28px; padding: 14px 0 26px; color: var(--muted); font-size: 13px; }
+.footer .container { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.footer a { color: var(--muted); }
+.spacer { flex: 1; }
+
+/* --- карточки ------------------------------------------------------------ */
+main.container { padding-top: 20px; display: grid; gap: 16px; }
+.card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px 20px; box-shadow: 0 1px 2px rgba(22, 33, 58, .05);
+}
+.card h1 { margin: 0 0 6px; font-size: 24px; }
+.card h2 { margin: 4px 0 10px; font-size: 18px; }
+.subtitle { margin-top: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+
+.cards-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.stat .stat-title { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
+.stat .stat-value { font-size: 30px; font-weight: 700; margin: 2px 0; }
+.stat .stat-value.small { font-size: 20px; }
+
+/* --- баннеры и бейджи ---------------------------------------------------- */
+.banner { display: flex; gap: 10px; align-items: flex-start; border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+.banner-ok { background: var(--ok-bg); color: var(--ok); }
+.banner-icon { font-weight: 700; }
+
+.badge { border-radius: 999px; padding: 2px 10px; font-size: 12px; white-space: nowrap; }
+.badge-ok { background: var(--ok-bg); color: var(--ok); }
+.badge-bad { background: var(--bad-bg); color: var(--bad); }
+.badge-warn { background: var(--warn-bg); color: var(--warn); }
+
+/* --- таблицы ------------------------------------------------------------- */
+.table-wrap { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.table th, .table td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.table th { color: var(--muted); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .03em; }
+.table tbody tr:hover { background: #f8faff; }
+.table code { background: #eef2ff; border-radius: 4px; padding: 1px 5px; }
+
+/* --- кнопки и формы ------------------------------------------------------ */
+.btn {
+    display: inline-block; border: 1px solid var(--accent); background: var(--accent);
+    color: #fff; border-radius: 8px; padding: 7px 14px; font-size: 14px; cursor: pointer;
+    text-decoration: none;
+}
+.btn:hover { background: var(--accent-dark); }
+.btn-secondary { background: var(--card); color: var(--accent); }
+.btn-secondary:hover { background: #eef4ff; }
+.btn-small { padding: 4px 10px; font-size: 13px; }
+.inline-form { display: inline; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 2px; }
+td.actions { white-space: nowrap; }
+.stack { display: grid; gap: 10px; }
+textarea {
+    width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+    font: inherit; resize: vertical; background: #fbfcff;
+}
+
+/* --- графики и текст документа ------------------------------------------- */
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.chart-box { background: #fbfcff; border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+.doc-text { white-space: pre-wrap; background: #fbfcff; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+
+.help h2 { margin-top: 22px; }
+
+/* --- печать: служебное не печатаем --------------------------------------- */
+@media print {
+    .navbar, .footer, .no-print, .actions, .inline-form, button { display: none !important; }
+    body { background: #fff; }
+    .card { border: none; box-shadow: none; padding: 4px 0; }
+    .table th, .table td { border-bottom: 1px solid #bbb; }
+}

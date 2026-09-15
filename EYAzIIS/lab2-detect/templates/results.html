@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Результаты — {{ suite }}{% endblock %}
+
+{% block content %}
+<div class="card no-print">
+    <h1>Результаты: набор «{{ suite }}»</h1>
+    <p class="muted subtitle">
+        Документов: <strong>{{ result.documents|length }}</strong> ·
+        суммарное время всех методов: <strong>{{ '%.0f' | format(result.total_ms) }} мс</strong>.
+        Каждая строка таблицы — активная ссылка на документ.
+    </p>
+    <div class="actions">
+        <form method="post" action="/recognize" class="inline-form">
+            <input type="hidden" name="suite" value="{{ suite }}">
+            <button type="submit" class="btn btn-secondary">Перераспознать</button>
+        </form>
+        <a class="btn btn-secondary" href="/export.csv?suite={{ suite }}">Сохранить CSV</a>
+        <a class="btn btn-secondary" href="/export.json?suite={{ suite }}">Сохранить JSON</a>
+        <a class="btn btn-secondary" href="/export.txt?suite={{ suite }}">Сохранить TXT</a>
+        <button type="button" class="btn" onclick="window.print()">Печать</button>
+    </div>
+</div>
+
+<div class="cards-row">
+    {% for m in methods %}
+    {% set r = result.reports[m] %}
+    <div class="card stat">
+        <div class="stat-title">{{ method_names[m] }}</div>
+        <div class="stat-value">{{ '%.1f%%' | format((r.accuracy or 0) * 100) }}</div>
+        <div class="muted">
+            {{ r.correct }} из {{ r.total }} верно ·
+            медиана {{ '%.3f' | format(r.time_median_ms) }} мс/док ·
+            всего {{ '%.0f' | format(r.time_total_ms) }} мс
+            {% if r.errors %} · сбоев: {{ r.errors }}{% endif %}
+        </div>
+        <div class="muted">
+            {% for lang in lang_names %}
+            {% set c, t = r.per_lang.get(lang, (0, 0)) %}
+            {{ lang_names[lang] }}: {{ c }}/{{ t }}{{ ' · ' if not loop.last }}
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="card">
+    <h2>Сравнение пар методов (точность и время)</h2>
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+            <tr><th>Пара методов</th><th>Совпадение ответов</th><th>Точность 1-го</th><th>Точность 2-го</th><th>Медиана времени 1-го</th><th>Медиана времени 2-го</th></tr>
+            </thead>
+            <tbody>
+            {% for p in result.pairs %}
+            <tr>
+                <td>{{ method_names[p.first] }} ↔ {{ method_names[p.second] }}</td>
+                <td>{{ '%.1f%%' | format(p.agreement * 100) }}</td>
+                <td>{{ '%.1f%%' | format((p.accuracy_first or 0) * 100) }}</td>
+                <td>{{ '%.1f%%' | format((p.accuracy_second or 0) * 100) }}</td>
+                <td>{{ '%.3f' | format(p.time_first_ms) }} мс</td>
+                <td>{{ '%.3f' | format(p.time_second_ms) }} мс</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Графики</h2>
+    <div class="charts">
+        <div class="chart-box"><canvas id="chart-accuracy"></canvas></div>
+        <div class="chart-box"><canvas id="chart-time"></canvas></div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Документы набора</h2>
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Документ</th>
+                <th>Знаков</th>
+                <th>Кодировка</th>
+                <th>Истинный язык</th>
+                {% for m in methods %}<th>{{ method_names[m] }}</th>{% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for doc in result.documents %}
+            {% set by_method = {} %}
+            {% for r in result.results if r.doc_id == doc.id %}
+            {% set _ = by_method.update({r.method: r}) %}
+            {% endfor %}
+            <tr>
+                <td>
+                    <a href="/doc/{{ doc.id }}">{{ doc.name }}</a>
+                    <a class="muted small" href="/raw/{{ doc.id }}" title="открыть исходный HTML">↗</a>
+                </td>
+                <td>{{ doc.chars }}</td>
+                <td class="muted">{{ doc.encoding }}</td>
+                <td>{{ lang_names[doc.lang_true] }}</td>
+                {% for m in methods %}
+                {% set r = by_method.get(m) %}
+                <td>
+                    {% if r and r.error %}
+                        <span class="badge badge-warn">сбой</span>
+                    {% elif r %}
+                        <span class="badge {{ 'badge-ok' if r.lang == doc.lang_true else 'badge-bad' }}">
+                            {{ lang_names[r.lang] if r.lang else '—' }}
+                        </span>
+                    {% else %}—{% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/vendor/chart.umd.min.js"></script>
+<script>window.CHART_DATA = {{ chart | safe }};</script>
+<script src="/static/app.js"></script>
+{% endblock %}
