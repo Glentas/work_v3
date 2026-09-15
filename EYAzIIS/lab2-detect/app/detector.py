@@ -76,14 +76,12 @@ class Detector:
 
 
 def _sort_ranked(ranked: tuple[tuple[str, float], ...]) -> tuple[tuple[str, float], ...]:
-    """Сортировка по расстоянию; при равенстве — детерминированный тай-брейк
-    по порядку языков варианта, иначе результат зависел бы от порядка обхода."""
     order = {lang: i for i, lang in enumerate(config.LANGS)}
     return tuple(sorted(ranked, key=lambda item: (item[1], order.get(item[0], 99))))
 
 
 def read_train_texts() -> dict[str, str]:
-    """Тренировочный набор: по одному файлу на язык (20–120 Кб)."""
+    """Тренировочный набор: по одному файлу на язык."""
     texts: dict[str, str] = {}
     for lang in config.LANGS:
         path = config.TRAIN_PATH / f"{lang}.txt"

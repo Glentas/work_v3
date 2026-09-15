@@ -40,7 +40,6 @@ LANG_ALPHABETS: dict[str, frozenset[str]] = {
     "en": frozenset("abcdefghijklmnopqrstuvwxyz"),
 }
 
-#: Уникальные для языка знаки (критерий Крапивина, дополнительный режим).
 LANG_UNIQUE_CHARS: dict[str, frozenset[str]] = {
     "fr": frozenset("àâæçéèêëîïôœùûüÿ"),
     "en": frozenset(),
