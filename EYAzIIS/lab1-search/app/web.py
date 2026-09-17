@@ -89,7 +89,8 @@ def _index_info() -> dict[str, int]:
 @router.get("/")
 def home(request: Request) -> object:
     return templates.TemplateResponse(
-        request=request, name="search.html", context=_page_context(SearchParams())
+        "search.html", 
+        {"request": request, **_page_context(SearchParams())}
     )
 
 
@@ -109,7 +110,7 @@ def search_page(
 
     if not q.strip():
         return templates.TemplateResponse(
-            request=request, name="search.html", context=_page_context(params)
+            name="search.html", context={"request": request, **_page_context(params)}
         )
 
     page = max(1, page)
@@ -120,16 +121,24 @@ def search_page(
     query_id = db.find_query_id(conn, params) or 0
     checked_ids = db.relevant_doc_ids(conn, query_id) if query_id else set()
 
-    return templates.TemplateResponse(
-        request=request, name="search.html", context=_page_context(
-            params,
-            outcome=outcome,
-            page=page,
-            checked_ids=checked_ids,
-            query_id=query_id,
-            conn=conn,
-        ),
+        # Создаем базовый контекст из вашей функции
+    context_data = _page_context(
+        params,
+        outcome=outcome,
+        page=page,
+        checked_ids=checked_ids,
+        query_id=query_id,
+        conn=conn,
     )
+    
+    # Добавляем request внутрь этого контекста
+    context_data["request"] = request
+
+    return templates.TemplateResponse(
+        "search.html", 
+        context_data
+    )
+
 
 
 @router.get("/documents/{doc_id}")
@@ -141,7 +150,7 @@ def document_page(
         raise HTTPException(status_code=404, detail="Документ не найден")
 
     return templates.TemplateResponse(
-        request=request, name="document.html", context={"doc": document}
+        name="document.html", context={"request":request, "doc": document}
     )
 
 
@@ -163,7 +172,9 @@ def document_download(doc_id: int, conn: DbConn) -> FileResponse:
 @router.get("/metrics")
 def metrics_page(request: Request, conn: DbConn) -> object:
     return templates.TemplateResponse(
-        request=request, name="metrics.html", context={
+        "metrics.html", 
+        {
+            "request": request,  # Переносим request внутрь контекста
             "summary": db.metrics_summary(conn),
             "labels": METRIC_LABELS,
             "index": _index_info(),
@@ -171,10 +182,11 @@ def metrics_page(request: Request, conn: DbConn) -> object:
     )
 
 
+
 @router.get("/help")
 def help_page(request: Request) -> object:
     return templates.TemplateResponse(
-        request=request, name="help.html", context={"index": _index_info(), "last_index": _last_index}
+        name="help.html", context={"request": request,"index": _index_info(), "last_index": _last_index}
     )
 
 
