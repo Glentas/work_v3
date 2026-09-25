@@ -1,0 +1,33 @@
+[project]
+name = "lab2-detect"
+version = "1.0.0"
+description = ""
+readme = "README.md"
+authors = [
+    { name = "G" }
+]
+
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "jinja2>=3.1",
+    "uvicorn[standard]>=0.32",
+    "python-multipart>=0.0.12",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.27",
+    "pytest>=8.3",
+]
+
+[tool.uv]
+package = false
+
+[build-system]
+requires = ["uv_build>=0.12.8,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
