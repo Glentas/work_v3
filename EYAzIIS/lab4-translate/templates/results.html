@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}{{ result.name }} — результаты перевода{% endblock %}
+
+{% block content %}
+<div class="card no-print">
+    <h1>{{ result.name }}</h1>
+    <p class="muted subtitle">
+        <span class="badge badge-ok">{{ mode_names[result.mode] }}</span>
+        <span class="badge badge-info">{{ domain_names[result.domain] }}</span>
+        {{ result.created_at }} · сессия #{{ session_id }}
+    </p>
+    <div class="actions">
+        <a class="btn btn-secondary" href="/export.txt?id={{ session_id }}">Сохранить TXT (Unicode)</a>
+        <a class="btn btn-secondary" href="/export.json?id={{ session_id }}">Сохранить JSON</a>
+        <button type="button" class="btn" onclick="window.print()">Печать</button>
+        <a class="btn btn-secondary" href="/history">История</a>
+    </div>
+</div>
+
+<div class="cards-row">
+    <div class="card stat">
+        <div class="stat-title">Слов в тексте</div>
+        <div class="stat-value">{{ result.stats.total_words }}</div>
+        <div class="muted small">без пунктуации · чисел: {{ result.stats.digits }} · артиклей: {{ result.stats.articles }}</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-title">Переведено слов</div>
+        <div class="stat-value">{{ result.stats.translated_words }}</div>
+        <div class="muted small">покрытие {{ '%.1f' | format(result.stats.coverage * 100) }} %</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-title">Неизвестных слов</div>
+        <div class="stat-value">{{ result.stats.unknown_total }}</div>
+        <div class="muted small">уникальных: {{ result.stats.unknown | length }}</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-title">Предложений / время</div>
+        <div class="stat-value">{{ result.stats.sentences }}</div>
+        <div class="muted small">анализ и перевод: {{ '%.0f' | format(result.stats.duration_ms) }} мс · словарь: {{ result.stats.dict_size }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Перевод</h2>
+    <div class="two-col">
+        <div>
+            <h3 class="muted">Исходный текст ({{ source_lang }})</h3>
+            <div class="doc-text">{{ result.source_text }}</div>
+        </div>
+        <div>
+            <h3 class="muted">Перевод ({{ target_lang }})</h3>
+            <div class="doc-text translated">{% for s in result.sentences %}{{ s.translation }}{% if not loop.last %} {% endif %}{% endfor %}</div>
+        </div>
+    </div>
+</div>
+
+{% if result.stats.unknown %}
+<div class="card no-print">
+    <h2>Неизвестные слова ({{ result.stats.unknown | length }})</h2>
+    <p class="muted subtitle">
+        Слова, для которых в словаре нет эквивалента; в переводе помечены
+        скобками <code>[слово]</code>. Утилита пополнения создаст для них записи
+        с предложенным переводом и пометкой «требует проверки».
+    </p>
+    <p>{% for w in result.stats.unknown %}<span class="badge badge-warn">{{ w }}</span> {% endfor %}</p>
+    <form method="post" action="/dictionary/replenish" class="inline-form"
+          onsubmit="return confirm('Добавить {{ result.stats.unknown | length }} неизв. слов в словарь?');">
+        <input type="hidden" name="session_id" value="{{ session_id }}">
+        <input type="hidden" name="domain" value="auto">
+        <button type="submit" class="btn">Пополнить словарь</button>
+    </form>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="tabs no-print">
+        <a class="tab {{ 'active' if tab == 'list' }}" href="/results?id={{ session_id }}&tab=list">Вкладка 1 · Список слов по частоте</a>
+        <a class="tab {{ 'active' if tab == 'tree' }}" href="/results?id={{ session_id }}&tab=tree">Вкладка 2 · Дерево синтаксического разбора</a>
+    </div>
+
+    {% if tab == 'list' %}
+    <h2>Список слов, упорядоченный по частоте встречаемости</h2>
+    <p class="muted subtitle">
+        Леммы текста с переводами и грамматической информацией: часть речи,
+        тег Penn Treebank и синтаксическая роль с расшифровкой
+        (функциональность лр. №1 и №3 весеннего семестра). Слов: {{ result.freq | length }}.
+    </p>
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>№</th><th>Част.</th><th>Лемма</th><th>Словоформы</th>
+                <th>Часть речи</th><th>Тег</th><th>Расшифровка тега</th>
+                <th>Роль</th><th>Расшифровка роли</th><th>Перевод</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in result.freq %}
+            <tr>
+                <td class="muted">{{ loop.index }}</td>
+                <td><strong>{{ row.freq }}</strong></td>
+                <td><code>{{ row.lemma }}</code></td>
+                <td class="muted small">{{ row.forms | join(', ') }}</td>
+                <td>{{ row.pos }}<br><span class="muted small">{{ row.pos_ru }}</span></td>
+                <td><span class="badge badge-info">{{ row.tag }}</span></td>
+                <td class="small">{{ row.tag_ru }}</td>
+                <td><span class="muted small">{{ row.dep }}</span></td>
+                <td class="small">{{ row.dep_ru }}</td>
+                <td>
+                    {% if row.translation %}{{ row.translation }}
+                    {% else %}<span class="badge badge-bad">нет в словаре</span>{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+    <h2>Дерево синтаксического разбора предложения</h2>
+    <form method="get" action="/results" class="sentence-picker no-print">
+        <input type="hidden" name="id" value="{{ session_id }}">
+        <input type="hidden" name="tab" value="tree">
+        <label for="sent">Предложение:</label>
+        <select id="sent" name="sent" onchange="this.form.submit()">
+            {% for s in result.sentences %}
+            <option value="{{ loop.index0 }}" {{ 'selected' if loop.index0 == sent }}>
+                №{{ loop.index }} — {{ s.text[:70] }}{{ '…' if s.text | length > 70 }}
+            </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if sentence %}
+    <div class="doc-text">{{ sentence.text }}</div>
+    <p class="muted small">Перевод: {{ sentence.translation }}</p>
+
+    <h3>Графическое дерево зависимостей</h3>
+    <div class="tree-scroll">{{ tree_svg | safe }}</div>
+    <p class="muted small no-print">Узел: слово / тег части речи / синтаксическая роль. Корень дерева подсвечен.</p>
+
+    <h3>Структура дерева (текстовое представление)</h3>
+    <pre class="tree-text">{{ tree_text }}</pre>
+
+    <h3>Таблица токенов</h3>
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+            <tr><th>ID</th><th>Слово</th><th>Лемма</th><th>Часть речи</th><th>Тег</th>
+                <th>Расшифровка тега</th><th>Роль</th><th>Расшифровка роли</th><th>Родитель</th></tr>
+            </thead>
+            <tbody>
+            {% for row in token_rows %}
+            <tr>
+                <td class="muted">{{ row.id }}</td>
+                <td><strong>{{ row.word }}</strong></td>
+                <td><code>{{ row.lemma }}</code></td>
+                <td>{{ row.pos }}<br><span class="muted small">{{ row.pos_ru }}</span></td>
+                <td><span class="badge badge-info">{{ row.tag }}</span></td>
+                <td class="small">{{ row.tag_ru }}</td>
+                <td class="muted small">{{ row.dep }}</td>
+                <td class="small">{{ row.dep_ru }}</td>
+                <td>{{ row.parent }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

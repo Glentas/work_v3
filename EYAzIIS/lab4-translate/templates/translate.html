@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Перевод — {{ app_title }}{% endblock %}
+
+{% block content %}
+{% if error %}
+<div class="banner banner-bad"><span class="banner-icon">!</span><span>{{ error }}</span></div>
+{% endif %}
+{% if not spacy_ok %}
+<div class="banner banner-warn">
+    <span class="banner-icon">!</span>
+    <span>Модель анализа <code>en_core_web_sm</code> не загружена — перевод недоступен.
+        Выполните один раз: <code>python scripts/download_model.py</code>, затем перезапустите сервер.</span>
+</div>
+{% endif %}
+
+<div class="card">
+    <h1>Перевод текста</h1>
+    <p class="muted subtitle">
+        Направление: <strong>{{ source_lang }} → {{ target_lang }}</strong> (вариант 7).
+        Предметные области: научные статьи по медицине и критика предметов
+        изобразительного искусства — область определяется автоматически и влияет
+        на выбор переводных эквивалентов.
+    </p>
+    <form method="post" action="/translate" enctype="multipart/form-data">
+        <div class="stack">
+            <label for="text">Текст на {{ source_lang | lower }} языке</label>
+            <textarea id="text" name="text" rows="12"
+                      placeholder="Вставьте текст для перевода…">{{ prefill }}</textarea>
+
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="file">…или загрузите файл <span class="muted small">(.txt, UTF-8/Windows-1251)</span></label>
+                    <input type="file" id="file" name="file" accept=".txt,.text,.md">
+                </div>
+                <div class="form-col">
+                    <label for="name">Название сессии <span class="muted small">(необязательно)</span></label>
+                    <input type="text" id="name" name="name" maxlength="80"
+                           placeholder="Например: Статья про гипертонию">
+                </div>
+            </div>
+
+            <fieldset class="modes">
+                <legend>Режим перевода</legend>
+                <label class="mode">
+                    <input type="radio" name="mode" value="transfer" checked>
+                    <span><strong>{{ mode_names["transfer"] }}</strong><br>
+                    <span class="muted small">анализ → межъязыковой трансфер → морфологический
+                    синтез русских словоформ (согласование, падежи, спряжение)</span></span>
+                </label>
+                <label class="mode">
+                    <input type="radio" name="mode" value="literal">
+                    <span><strong>{{ mode_names["literal"] }}</strong><br>
+                    <span class="muted small">замена элементов текста словарными эквивалентами
+                    с учётом оборотов; результат близок к пословному</span></span>
+                </label>
+            </fieldset>
+
+            <div class="actions">
+                <button type="submit" class="btn" {{ 'disabled' if not spacy_ok }}>Перевести</button>
+                <span class="muted small">Результаты, частотный список и деревья разбора
+                    сохраняются в истории сессии.</span>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="cards-row">
+    <div class="card stat">
+        <div class="stat-title">Словарь, всего</div>
+        <div class="stat-value">{{ dict_total }}</div>
+        <div class="muted small">записей в таблице БД</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-title">Предметные области</div>
+        <div class="stat-value small">
+            {{ dict_by_domain["med"] }} мед · {{ dict_by_domain["art"] }} иск
+        </div>
+        <div class="muted small">общая лексика: {{ dict_by_domain["general"] }}</div>
+    </div>
+    <div class="card stat">
+        <div class="stat-title">Требуют проверки</div>
+        <div class="stat-value">{{ unverified }}</div>
+        <div class="muted small">
+            записей, добавленных утилитой пополнения —
+            <a href="/dictionary?verified=0">открыть</a>
+        </div>
+    </div>
+</div>
+
+{% if samples %}
+<div class="card">
+    <h2>Демонстрационные тексты</h2>
+    <p class="muted subtitle">Тексты предметных областей варианта 7 — нажмите, чтобы подставить в форму.</p>
+    <div class="table-wrap">
+        <table class="table">
+            <thead><tr><th>Набор</th><th>Первая строка</th><th>Знаков</th><th></th></tr></thead>
+            <tbody>
+            {% for s in samples %}
+            <tr>
+                <td><code>{{ s.name }}</code></td>
+                <td>{{ s.title }}</td>
+                <td class="muted">{{ s.chars }}</td>
+                <td><a class="btn btn-secondary btn-small" href="/?sample={{ s.name }}">Подставить</a></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

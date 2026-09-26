@@ -5,8 +5,8 @@ dist/
 wheels/
 *.egg-info
 uv.lock
-corpus/
-docs/
+DB/
+exports/
 
 .venv
 .env

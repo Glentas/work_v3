@@ -1,7 +1,7 @@
 [project]
 name = "lab4-translate"
 version = "1.0.0"
-description = ""
+description = "Автоматический машинный перевод текстов: словарная система с трансфером (вариант 7: англо-русский, медицина и критика изобразительного искусства)"
 readme = "README.md"
 authors = [
     { name = "G" }
@@ -13,6 +13,7 @@ dependencies = [
     "jinja2>=3.1",
     "uvicorn[standard]>=0.32",
     "python-multipart>=0.0.12",
+    "spacy>=3.7",
 ]
 
 [dependency-groups]

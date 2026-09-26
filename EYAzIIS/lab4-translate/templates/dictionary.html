@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Словарь — {{ app_title }}{% endblock %}
+
+{% block content %}
+{% if msg %}
+<div class="banner banner-ok"><span class="banner-icon">✓</span><span>{{ msg }}</span></div>
+{% endif %}
+
+<div class="card">
+    <h1>Двуязычный словарь (таблица БД <code>entries</code>)</h1>
+    <p class="muted subtitle">
+        {{ source_lang }} → {{ target_lang }} · всего записей: <strong>{{ total }}</strong>
+        ({{ domain_names["general"] }}: {{ by_domain["general"] }},
+        медицина: {{ by_domain["med"] }},
+        искусство: {{ by_domain["art"] }})
+        · требуют проверки: <strong>{{ unverified }}</strong>.
+    </p>
+</div>
+
+<div class="card no-print">
+    <h2>Утилита автоматического пополнения словаря</h2>
+    <p class="muted subtitle">
+        Неизвестные слова переводов автоматически заносятся в словарь: система
+        определяет часть речи по тегам разбора и предлагает перевод
+        (транслитерация для терминов и имён собственных). Записи помечаются
+        «не проверено» и ждут корректировки пользователем.
+    </p>
+    <form method="post" action="/dictionary/replenish" class="stack">
+        <div class="form-row">
+            <div class="form-col">
+                <label for="session_id">Из сохранённой сессии перевода</label>
+                <select id="session_id" name="session_id">
+                    <option value="0">— не выбрано —</option>
+                    {% for s in replenish_sessions %}
+                    <option value="{{ s.id }}">#{{ s.id }} {{ s.name }} (неизв. слов: {{ s.unknown }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-col">
+                <label for="domain">Предметная область новых записей</label>
+                <select id="domain" name="domain">
+                    <option value="auto">определить автоматически</option>
+                    {% for d in domains %}
+                    <option value="{{ d }}">{{ domain_names[d] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <label for="rtext">…или из нового текста</label>
+        <textarea id="rtext" name="text" rows="4"
+                  placeholder="Вставьте текст — система найдёт неизвестные слова и создаст записи словаря"></textarea>
+        <div class="actions">
+            <button type="submit" class="btn">Пополнить словарь</button>
+        </div>
+    </form>
+</div>
+
+<div class="card no-print">
+    <h2>Корректировка словаря</h2>
+    <div class="two-col">
+        <div>
+            <h3 class="muted">Добавить запись</h3>
+            <form method="post" action="/dictionary/add" class="stack">
+                <label>Источник (лемма или оборот)<input type="text" name="source" required maxlength="120"></label>
+                <div class="form-row">
+                    <label class="form-col">Часть речи
+                        <select name="pos">
+                            {% for p in ["NOUN","VERB","ADJ","ADV","ADP","PRON","DET","AUX","NUM","CCONJ","SCONJ","PART","PROPN","PHRASE",""] %}
+                            <option value="{{ p }}">{{ p or '—' }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label class="form-col">Область
+                        <select name="domain">
+                            {% for d in domains %}<option value="{{ d }}">{{ domain_names[d] }}</option>{% endfor %}
+                        </select>
+                    </label>
+                </div>
+                <label>Перевод<input type="text" name="target" required maxlength="160"></label>
+                <label>Грамматика <span class="muted small">(m/f/n, anim, inv, impf/pf, pair:…, pp:…, pl:…, gpl:…, gov:…, comp:…, forms:…)</span>
+                    <input type="text" name="gram" maxlength="300" placeholder="m,anim / impf,pair:осмотреть"></label>
+                <label>Примечание<input type="text" name="note" maxlength="160"></label>
+                <div class="actions"><button type="submit" class="btn">Добавить</button></div>
+            </form>
+        </div>
+        <div>
+            <h3 class="muted">Массовая корректировка (CSV)</h3>
+            <p class="muted small">
+                Формат CSV (разделитель «;», кодировка Unicode):
+                <code>source;pos;target;gram;domain;note;verified</code>.
+                Импорт добавляет отсутствующие записи и обновляет существующие.
+            </p>
+            <div class="actions">
+                <a class="btn btn-secondary" href="/dictionary/export.csv">Экспорт словаря в CSV</a>
+            </div>
+            <form method="post" action="/dictionary/import" enctype="multipart/form-data" class="stack">
+                <input type="file" name="file" accept=".csv" required>
+                <div class="actions"><button type="submit" class="btn btn-secondary">Импортировать CSV</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if editing %}
+<div class="card no-print">
+    <h2>Правка записи #{{ editing.id }}</h2>
+    <form method="post" action="/dictionary/update" class="stack">
+        <input type="hidden" name="id" value="{{ editing.id }}">
+        <div class="form-row">
+            <label class="form-col">Источник<input type="text" name="source" value="{{ editing.source }}" required></label>
+            <label class="form-col">Часть речи
+                <select name="pos">
+                    {% for p in ["NOUN","VERB","ADJ","ADV","ADP","PRON","DET","AUX","NUM","CCONJ","SCONJ","PART","PROPN","PHRASE",""] %}
+                    <option value="{{ p }}" {{ 'selected' if editing.pos == p }}>{{ p or '—' }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label class="form-col">Область
+                <select name="domain">
+                    {% for d in domains %}
+                    <option value="{{ d }}" {{ 'selected' if editing.domain == d }}>{{ domain_names[d] }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+        <label>Перевод<input type="text" name="target" value="{{ editing.target }}" required></label>
+        <label>Грамматика<input type="text" name="gram" value="{{ serialize_gram(editing.gram) }}"></label>
+        <label>Примечание<input type="text" name="note" value="{{ editing.note }}"></label>
+        <label class="checkline">Статус записи
+            <select name="verified">
+                <option value="1" {{ 'selected' if editing.verified }}>проверено</option>
+                <option value="0" {{ 'selected' if not editing.verified }}>требует проверки</option>
+            </select>
+        </label>
+        <div class="actions">
+            <button type="submit" class="btn">Сохранить</button>
+            <a class="btn btn-secondary" href="/dictionary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+<div class="card">
+    <h2>Записи словаря</h2>
+    <form method="get" action="/dictionary" class="filters no-print">
+        <input type="text" name="q" value="{{ filters.q }}" placeholder="Поиск: слово или перевод…">
+        <select name="pos">
+            <option value="">часть речи: любая</option>
+            {% for p in ["NOUN","VERB","ADJ","ADV","ADP","PRON","DET","AUX","NUM","CCONJ","SCONJ","PART","PROPN","PHRASE"] %}
+            <option value="{{ p }}" {{ 'selected' if filters.pos == p }}>{{ p }}</option>
+            {% endfor %}
+        </select>
+        <select name="domain">
+            <option value="">область: любая</option>
+            {% for d in domains %}
+            <option value="{{ d }}" {{ 'selected' if filters.domain == d }}>{{ domain_names[d] }}</option>
+            {% endfor %}
+        </select>
+        <select name="verified">
+            <option value="">статус: любой</option>
+            <option value="0" {{ 'selected' if filters.verified == '0' }}>требует проверки</option>
+            <option value="1" {{ 'selected' if filters.verified == '1' }}>проверено</option>
+        </select>
+        <button type="submit" class="btn btn-secondary">Найти</button>
+        <a class="btn btn-secondary" href="/dictionary">Сбросить</a>
+    </form>
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+            <tr><th>Источник</th><th>Ч.Р.</th><th>Перевод</th><th>Грамматика</th>
+                <th>Область</th><th>Статус</th><th class="no-print">Действия</th></tr>
+            </thead>
+            <tbody>
+            {% for e in entries %}
+            <tr class="{{ 'row-warn' if not e.verified }}">
+                <td><code>{{ e.source }}</code>{% if e.note %}<br><span class="muted small">{{ e.note }}</span>{% endif %}</td>
+                <td class="muted">{{ e.pos or '—' }}</td>
+                <td><strong>{{ e.target or '—' }}</strong></td>
+                <td class="muted small">{{ serialize_gram(e.gram) or '—' }}</td>
+                <td class="small">{{ domain_names[e.domain] }}</td>
+                <td>
+                    {% if e.verified %}<span class="badge badge-ok">проверено</span>
+                    {% else %}<span class="badge badge-warn">требует проверки</span>{% endif %}
+                </td>
+                <td class="actions no-print">
+                    <a class="btn btn-secondary btn-small" href="/dictionary?edit={{ e.id }}&q={{ filters.q }}">Править</a>
+                    {% if not e.verified %}
+                    <form method="post" action="/dictionary/verify" class="inline-form">
+                        <input type="hidden" name="id" value="{{ e.id }}">
+                        <button type="submit" class="btn btn-secondary btn-small">Подтвердить</button>
+                    </form>
+                    {% endif %}
+                    <form method="post" action="/dictionary/delete" class="inline-form"
+                          onsubmit="return confirm('Удалить запись «{{ e.source }}»?');">
+                        <input type="hidden" name="id" value="{{ e.id }}">
+                        <button type="submit" class="btn btn-secondary btn-small">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            {% if not entries %}
+            <tr><td colspan="7" class="muted">Записи не найдены — измените фильтры.</td></tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <p class="muted small no-print">Показано не более 1000 записей; уточните фильтры для отбора.</p>
+</div>
+{% endblock %}

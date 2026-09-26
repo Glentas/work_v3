@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}История переводов{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>История сессий перевода</h1>
+    <p class="muted subtitle">
+        Каждая сессия хранит исходный текст, перевод, статистику, частотный
+        список и деревья разбора. Всего сессий: {{ sessions | length }}.
+    </p>
+    {% if sessions %}
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+            <tr><th>#</th><th>Название</th><th>Дата</th><th>Режим</th><th>Область</th>
+                <th>Слов</th><th>Покрытие</th><th>Неизв.</th><th class="no-print"></th></tr>
+            </thead>
+            <tbody>
+            {% for s in sessions %}
+            <tr>
+                <td class="muted">{{ s.id }}</td>
+                <td><a href="/results?id={{ s.id }}">{{ s.name }}</a></td>
+                <td class="muted small">{{ s.created_at }}</td>
+                <td class="small">{{ mode_names[s.mode] }}</td>
+                <td class="small">{{ domain_names[s.domain] }}</td>
+                <td>{{ s.stats.total_words }}</td>
+                <td>{{ '%.1f' | format(s.stats.coverage * 100) }} %</td>
+                <td>{{ s.stats.unknown_total }}</td>
+                <td class="actions no-print">
+                    <a class="btn btn-secondary btn-small" href="/results?id={{ s.id }}">Открыть</a>
+                    <a class="btn btn-secondary btn-small" href="/export.txt?id={{ s.id }}">TXT</a>
+                    <form method="post" action="/history/delete" class="inline-form"
+                          onsubmit="return confirm('Удалить сессию «{{ s.name }}»?');">
+                        <input type="hidden" name="id" value="{{ s.id }}">
+                        <button type="submit" class="btn btn-secondary btn-small">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="banner"><span class="banner-icon">i</span>
+        <span>Сессий пока нет — <a href="/">переведите текст</a>.</span></div>
+    {% endif %}
+</div>
+{% endblock %}

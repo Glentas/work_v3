@@ -1,0 +1,1682 @@
+# Начальный словарь системы машинного перевода (лр. №4, вариант 7).
+# Формат: source <TAB> pos <TAB> target <TAB> gram <TAB> domain <TAB> note
+# gram: m/f/n — род; anim — одушевлённость; inv — неизменяемость; impf/pf — вид;
+#       pair: — парный вид; pp: — краткое причастие; pl:/gpl: — формы мн. ч.;
+#       comp:/sup: — степени сравнения; forms: — явные словоформы.
+# --- Личные и вопросительные местоимения ---
+i	PRON	я		general	
+you	PRON	вы		general	ед. и мн. число
+he	PRON	он		general	
+she	PRON	она		general	
+it	PRON	оно		general	
+we	PRON	мы		general	
+they	PRON	они		general	
+who	PRON	кто		general	
+whom	PRON	кого		general	
+what	PRON	что		general	
+which	PRON	который		general	
+this	PRON	это		general	
+that	PRON	это		general	
+these	PRON	эти		general	
+those	PRON	те		general	
+mine	PRON	мой		general	
+someone	PRON	кто-то		general	
+something	PRON	что-то		general	
+nothing	PRON	ничто		general	
+everything	PRON	всё		general	
+anyone	PRON	кто-либо		general	
+nobody	PRON	никто		general	
+there	PRON	имеется		general	конструкция there is/are
+there	ADV	там		general	
+here	ADV	здесь		general	
+self	PRON	себя		general	
+# --- Притяжательные и указательные определители ---
+my	DET	мой		general	
+your	DET	твой		general	
+his	DET	его		general	
+her	DET	её		general	
+its	DET	его		general	
+our	DET	наш		general	
+their	DET	их		general	
+this	DET	этот		general	
+that	DET	тот		general	
+these	DET	этот		general	согласуется как «эти»
+those	DET	тот		general	согласуется как «те»
+every	DET	каждый		general	
+each	DET	каждый		general	
+some	DET	некоторый		general	
+any	DET	любой		general	
+no	DET	никакой		general	
+all	DET	весь		general	
+both	DET	оба		general	
+which	DET	какой		general	
+whose	DET	чей		general	
+such	DET	такой		general	
+another	DET	другой		general	
+either	DET	либо		general	
+neither	DET	ни		general	
+# --- Артикли: русским соответствием не обладают, в переводе опускаются ---
+the	DET	—		general	определённый артикль
+a	DET	—		general	неопределённый артикль
+an	DET	—		general	неопределённый артикль
+# --- Частицы и отрицание ---
+not	PART	не		general	
+n't	PART	не		general	
+to	PART	—		general	инфинитивный маркер
+'s	PART	—		general	притяжательный аффикс
+yes	INTJ	да		general	
+no	INTJ	нет		general	
+oh	INTJ	о		general	
+well	INTJ	что ж		general	
+# --- Союзы ---
+and	CCONJ	и		general	
+but	CCONJ	но		general	
+or	CCONJ	или		general	
+because	SCONJ	потому что		general	
+if	SCONJ	если		general	
+although	SCONJ	хотя		general	
+though	SCONJ	хотя		general	
+while	SCONJ	в то время как		general	
+that	SCONJ	что		general	
+than	SCONJ	чем		general	
+when	SCONJ	когда		general	
+where	SCONJ	где		general	
+unless	SCONJ	если не		general	
+until	SCONJ	пока не		general	
+since	SCONJ	поскольку		general	
+whether	SCONJ	ли		general	
+once	SCONJ	как только		general	
+whereas	SCONJ	тогда как		general	
+# --- Предлоги (падежное управление задаёт PREP_MAP в transfer.py) ---
+in	ADP	в		general	
+on	ADP	на		general	
+at	ADP	в		general	
+to	ADP	к		general	
+of	ADP	—		general	родительный падеж без предлога
+for	ADP	для		general	
+from	ADP	из		general	
+by	ADP	у		general	агент пассива — творительный падеж
+with	ADP	с		general	
+without	ADP	без		general	
+about	ADP	о		general	
+after	ADP	после		general	
+before	ADP	до		general	
+between	ADP	между		general	
+among	ADP	среди		general	
+during	ADP	в течение		general	
+through	ADP	через		general	
+into	ADP	в		general	
+onto	ADP	на		general	
+over	ADP	над		general	
+under	ADP	под		general	
+above	ADP	над		general	
+below	ADP	под		general	
+near	ADP	около		general	
+behind	ADP	за		general	
+beside	ADP	рядом с		general	
+along	ADP	вдоль		general	
+across	ADP	через		general	
+against	ADP	против		general	
+within	ADP	в		general	
+since	ADP	с		general	
+until	ADP	до		general	
+upon	ADP	на		general	
+via	ADP	через		general	
+despite	ADP	несмотря на		general	
+except	ADP	кроме		general	
+like	ADP	как		general	
+per	ADP	на		general	
+towards	ADP	к		general	
+toward	ADP	к		general	
+out	ADP	из		general	
+off	ADP	с		general	
+versus	ADP	против		general	
+plus	ADP	плюс		general	
+# --- Вспомогательные и модальные глаголы ---
+be	AUX	быть	impf	general	
+be	VERB	быть	impf	general	
+have	AUX	иметь	impf	general	
+have	VERB	иметь	impf	general	
+do	AUX	делать	impf	general	вспомогательный в вопросах и отрицании
+do	VERB	делать	impf	general	
+will	AUX	будет		general	маркер будущего времени
+would	AUX	бы		general	маркер условного наклонения
+can	AUX	мочь	impf	general	
+could	AUX	мог бы		general	
+shall	AUX	следует		general	
+should	AUX	должен		general	
+may	AUX	может		general	
+might	AUX	мог бы		general	
+must	AUX	должен		general	
+# --- Общеупотребительные глаголы ---
+see	VERB	видеть	impf,pair:увидеть,pp:увиден	general	
+look	VERB	смотреть	impf,pair:посмотреть	general	
+watch	VERB	наблюдать	impf,pair:понаблюдать	general	
+observe	VERB	наблюдать	impf,pair:пронаблюдать	general	
+examine	VERB	осматривать	impf,pair:осмотреть,pp:осмотрен	general	
+study	VERB	изучать	impf,pair:изучить,pp:изучен	general	
+research	VERB	исследовать	impf	general	
+analyze	VERB	анализировать	impf,pair:проанализировать	general	
+analyse	VERB	анализировать	impf,pair:проанализировать	general	
+show	VERB	показывать	impf,pair:показать	general	
+reveal	VERB	выявлять	impf,pair:выявить,pp:выявлен	general	
+demonstrate	VERB	демонстрировать	impf,pair:продемонстрировать	general	
+suggest	VERB	предлагать	impf,pair:предложить,pp:предложен	general	
+propose	VERB	предлагать	impf,pair:предложить	general	
+describe	VERB	описывать	impf,pair:описать,pp:описан	general	
+explain	VERB	объяснять	impf,pair:объяснить,pp:объяснен	general	
+discuss	VERB	обсуждать	impf,pair:обсудить,pp:обсужден	general	
+consider	VERB	рассматривать	impf,pair:рассмотреть,pp:рассмотрен	general	
+determine	VERB	определять	impf,pair:определить,pp:определен	general	
+indicate	VERB	указывать	impf,pair:указать,pp:указан	general	
+require	VERB	требовать	impf,pair:потребовать	general	
+need	VERB	требовать	impf,pair:потребовать	general	
+use	VERB	использовать	impf	general	
+apply	VERB	применять	impf,pair:применить,pp:применен	general	
+perform	VERB	выполнять	impf,pair:выполнить,pp:выполнен	general	
+provide	VERB	обеспечивать	impf,pair:обеспечить,pp:обеспечен	general	
+present	VERB	представлять	impf,pair:представить,pp:представлен	general	
+publish	VERB	публиковать	impf,pair:опубликовать	general	
+write	VERB	писать	impf,pair:написать	general	
+read	VERB	читать	impf,pair:прочитать	general	
+draw	VERB	рисовать	impf,pair:нарисовать	general	
+paint	VERB	писать	impf,pair:написать	general	писать красками
+depict	VERB	изображать	impf,pair:изобразить,pp:изображен	general	
+portray	VERB	изображать	impf,pair:изобразить	general	
+represent	VERB	представлять	impf,pair:представить	general	
+express	VERB	выражать	impf,pair:выразить,pp:выражен	general	
+contain	VERB	содержать	impf	general	
+include	VERB	включать	impf,pair:включить,pp:включен	general	
+consist	VERB	состоять	impf	general	consist of — состоять из
+compose	VERB	составлять	impf,pair:составить,pp:составлен	general	
+create	VERB	создавать	impf,pair:создать	general	
+make	VERB	делать	impf,pair:сделать	general	
+build	VERB	строить	impf,pair:построить,pp:построен	general	
+develop	VERB	развивать	impf,pair:развить,pp:развит	general	
+produce	VERB	производить	impf,pair:произвести	general	
+generate	VERB	порождать	impf,pair:породить	general	
+increase	VERB	увеличивать	impf,pair:увеличить,pp:увеличен	general	
+decrease	VERB	уменьшать	impf,pair:уменьшить,pp:уменьшен	general	
+reduce	VERB	снижать	impf,pair:снизить,pp:снижен	general	
+improve	VERB	улучшать	impf,pair:улучшить,pp:улучшен	general	
+measure	VERB	измерять	impf,pair:измерить,pp:измерен	general	
+test	VERB	проверять	impf,pair:проверить,pp:проверен	general	
+compare	VERB	сравнивать	impf,pair:сравнить,pp:сравнен	general	
+evaluate	VERB	оценивать	impf,pair:оценить,pp:оценен	general	
+assess	VERB	оценивать	impf,pair:оценить	general	
+find	VERB	находить	impf,pair:найти	general	
+lose	VERB	терять	impf,pair:потерять,pp:потерян	general	
+receive	VERB	получать	impf,pair:получить,pp:получен	general	
+give	VERB	давать	impf,pair:дать	general	
+take	VERB	брать	impf,pair:взять	general	
+get	VERB	получать	impf,pair:получить	general	
+put	VERB	класть	impf,pair:положить	general	
+place	VERB	помещать	impf,pair:поместить,pp:помещен	general	
+bring	VERB	приносить	impf,pair:принести	general	
+send	VERB	отправлять	impf,pair:отправить,pp:отправлен	general	
+tell	VERB	рассказывать	impf,pair:рассказать	general	
+say	VERB	говорить	impf,pair:сказать	general	
+speak	VERB	говорить	impf,pair:сказать	general	
+think	VERB	думать	impf,pair:подумать	general	
+believe	VERB	считать	impf,pair:счесть	general	верить в
+know	VERB	знать	impf,pair:узнать	general	
+understand	VERB	понимать	impf,pair:понять	general	
+learn	VERB	узнавать	impf,pair:узнать	general	
+remember	VERB	помнить	impf,pair:запомнить	general	
+forget	VERB	забывать	impf,pair:забыть	general	
+choose	VERB	выбирать	impf,pair:выбрать	general	
+decide	VERB	решать	impf,pair:решить,pp:решен	general	
+agree	VERB	соглашаться	impf,pair:согласиться	general	
+allow	VERB	позволять	impf,pair:позволить,pp:позволен	general	
+help	VERB	помогать	impf,pair:помочь,gov:dat	general	
+support	VERB	поддерживать	impf,pair:поддержать,pp:поддержан	general	
+influence	VERB	влиять	impf,pair:повлиять,gov:acc,govprep:на	general	
+affect	VERB	затрагивать	impf,pair:затронуть,pp:затронут	general	
+cause	VERB	вызывать	impf,pair:вызвать,pp:вызван	general	
+lead	VERB	вести	impf,pair:привести	general	lead to — приводить к
+become	VERB	становиться	impf,pair:стать	general	
+remain	VERB	оставаться	impf,pair:остаться	general	
+stay	VERB	оставаться	impf,pair:остаться	general	
+appear	VERB	появляться	impf,pair:появиться	general	
+seem	VERB	казаться	impf	general	
+occur	VERB	происходить	impf,pair:произойти	general	
+happen	VERB	случаться	impf,pair:случиться	general	
+exist	VERB	существовать	impf	general	
+live	VERB	жить	impf	general	
+work	VERB	работать	impf	general	
+play	VERB	играть	impf,pair:сыграть	general	
+open	VERB	открывать	impf,pair:открыть,pp:открыт	general	
+close	VERB	закрывать	impf,pair:закрыть,pp:закрыт	general	
+begin	VERB	начинать	impf,pair:начать	general	
+start	VERB	начинать	impf,pair:начать	general	
+end	VERB	заканчивать	impf,pair:закончить,pp:закончен	general	
+finish	VERB	заканчивать	impf,pair:закончить	general	
+continue	VERB	продолжать	impf,pair:продолжить,pp:продолжен	general	
+stop	VERB	останавливать	impf,pair:остановить,pp:остановлен	general	
+change	VERB	менять	impf,pair:изменить,pp:изменен	general	
+grow	VERB	расти	impf,pair:вырасти	general	
+rise	VERB	подниматься	impf,pair:подняться	general	
+fall	VERB	падать	impf,pair:упасть	general	
+move	VERB	двигаться	impf,pair:двинуться	general	
+run	VERB	бежать	impf,pair:пробежать	general	
+walk	VERB	идти	impf,pair:пройти	general	ходить пешком
+go	VERB	идти	impf,pair:пойти	general	
+come	VERB	приходить	impf,pair:прийти	general	
+return	VERB	возвращать	impf,pair:вернуть	general	
+enter	VERB	входить	impf,pair:войти	general	
+leave	VERB	покидать	impf,pair:покинуть,pp:покинут	general	
+arrive	VERB	прибывать	impf,pair:прибыть,pp:прибыт	general	
+reach	VERB	достигать	impf,pair:достигнуть	general	
+follow	VERB	соблюдать	impf,pair:соблюсти	general	следовать правилам
+carry	VERB	переносить	impf,pair:перенести	general	
+hold	VERB	держать	impf,pair:удержать	general	
+keep	VERB	сохранять	impf,pair:сохранить,pp:сохранен	general	
+save	VERB	сохранять	impf,pair:сохранить	general	
+protect	VERB	защищать	impf,pair:защитить,pp:защищен	general	
+prevent	VERB	предотвращать	impf,pair:предотвратить,pp:предотвращен	general	
+avoid	VERB	избегать	impf,pair:избежать,gov:gen	general	
+remove	VERB	удалять	impf,pair:удалить,pp:удален	general	
+add	VERB	добавлять	impf,pair:добавить,pp:добавлен	general	
+mix	VERB	смешивать	impf,pair:смешать,pp:смешан	general	
+divide	VERB	делить	impf,pair:разделить,pp:разделен	general	
+connect	VERB	соединять	impf,pair:соединить,pp:соединен	general	
+separate	VERB	разделять	impf,pair:разделить	general	
+cover	VERB	покрывать	impf,pair:покрыть,pp:покрыт	general	
+fill	VERB	наполнять	impf,pair:наполнить,pp:наполнен	general	
+replace	VERB	заменять	impf,pair:заменить,pp:заменен	general	
+restore	VERB	восстанавливать	impf,pair:восстановить,pp:восстановлен	general	
+preserve	VERB	сохранять	impf,pair:сохранить	general	
+hang	VERB	висеть	impf	general	о картине
+display	VERB	выставлять	impf,pair:выставить,pp:выставлен	general	
+exhibit	VERB	выставлять	impf,pair:выставить,pp:выставлен	general	
+admire	VERB	восхищаться	impf	general	
+collect	VERB	собирать	impf,pair:собрать,pp:собран	general	
+sell	VERB	продавать	impf,pair:продать,pp:продан	general	
+buy	VERB	покупать	impf,pair:купить,pp:куплен	general	
+pay	VERB	платить	impf,pair:заплатить,pp:заплачен	general	
+spend	VERB	тратить	impf,pair:потратить	general	
+cost	VERB	стоить	impf	general	
+last	VERB	длиться	impf	general	
+wait	VERB	ждать	impf	general	
+hope	VERB	надеяться	impf	general	
+try	VERB	пытаться	impf,pair:попытаться	general	
+attempt	VERB	пытаться	impf,pair:попытаться	general	
+achieve	VERB	достигать	impf,pair:достигнуть,pp:достигнут,gov:gen	general	
+obtain	VERB	получать	impf,pair:получить	general	
+involve	VERB	вовлекать	impf,pair:вовлечь,pp:вовлечен	general	
+depend	VERB	зависеть	impf	general	
+relate	VERB	относиться	impf	general	
+refer	VERB	ссылаться	impf	general	
+mean	VERB	означать	impf	general	
+symbolize	VERB	символизировать	impf	general	
+reflect	VERB	отражать	impf,pair:отразить,pp:отражен	general	
+convey	VERB	передавать	impf,pair:передать,pp:передан	general	
+emphasize	VERB	подчеркивать	impf,pair:подчеркнуть,pp:подчеркнут	general	
+highlight	VERB	выделять	impf,pair:выделить,pp:выделен	general	
+illustrate	VERB	иллюстрировать	impf	general	
+capture	VERB	передавать	impf,pair:передать	general	передавать образ
+inspire	VERB	вдохновлять	impf,pair:вдохновить,pp:вдохновлен	general	
+impress	VERB	впечатлять	impf,pair:впечатлить	general	
+evoke	VERB	вызывать	impf,pair:вызвать	general	
+render	VERB	передавать	impf,pair:передать	general	
+combine	VERB	объединять	impf,pair:объединить,pp:объединен	general	
+contrast	VERB	противопоставлять	impf,pair:противопоставить	general	
+differ	VERB	отличаться	impf	general	
+vary	VERB	различаться	impf	general	
+match	VERB	соответствовать	impf	general	
+correspond	VERB	соответствовать	impf	general	
+belong	VERB	принадлежать	impf	general	
+note	VERB	отмечать	impf,pair:отметить,pp:отмечен	general	
+mention	VERB	упоминать	impf,pair:упомянуть,pp:упомянут	general	
+report	VERB	сообщать	impf,pair:сообщить,pp:сообщен	general	
+claim	VERB	утверждать	impf,pair:заявить	general	
+argue	VERB	утверждать	impf	general	
+prove	VERB	доказывать	impf,pair:доказать,pp:доказан	general	
+confirm	VERB	подтверждать	impf,pair:подтвердить,pp:подтвержден	general	
+deny	VERB	отрицать	impf	general	
+respond	VERB	отвечать	impf,pair:ответить	general	
+answer	VERB	отвечать	impf,pair:ответить	general	
+ask	VERB	спрашивать	impf,pair:спросить	general	
+call	VERB	называть	impf,pair:назвать,pp:назван	general	
+name	VERB	называть	impf,pair:назвать	general	
+sign	VERB	подписывать	impf,pair:подписать,pp:подписан	general	
+attribute	VERB	приписывать	impf,pair:приписать,pp:приписан	general	
+date	VERB	датировать	impf	general	
+repair	VERB	ремонтировать	impf	general	
+damage	VERB	повреждать	impf,pair:повредить,pp:поврежден	general	
+destroy	VERB	разрушать	impf,pair:разрушить,pp:разрушен	general	
+survive	VERB	сохраняться	impf	general	
+lack	VERB	не иметь	impf	general	
+treat	VERB	рассматривать	impf,pair:рассмотреть	general	в медицине — лечить (см. med)
+# --- Общеупотребительные существительные ---
+man	NOUN	человек	m,anim,forms:gen=человека;dat=человеку;acc=человека;inst=человеком;prep=человеке;nompl=люди;genpl=людей;datpl=людям;accpl=людей;instpl=людьми;preppl=людях	general	
+woman	NOUN	женщина	f,anim	general	
+person	NOUN	человек	m,anim,forms:gen=человека;dat=человеку;acc=человека;inst=человеком;prep=человеке;nompl=люди;genpl=людей;datpl=людям;accpl=людей;instpl=людьми;preppl=людях	general	
+people	NOUN	люди	anim,forms:nompl=люди;genpl=людей;datpl=людям;accpl=людей;instpl=людьми;preppl=людях	general	множественное число
+child	NOUN	ребёнок	m,anim,forms:nompl=дети;genpl=детей;datpl=детям;accpl=детей;instpl=детьми;preppl=детях	general	
+family	NOUN	семья	f	general	
+friend	NOUN	друг	m,anim,gpl:друзей,forms:nompl=друзья;datpl=друзьям;accpl=друзей;instpl=друзьями;preppl=друзьях	general	
+author	NOUN	автор	m,anim	general	
+artist	NOUN	художник	m,anim	general	
+doctor	NOUN	врач	m,anim	general	
+patient	NOUN	пациент	m,anim	general	
+scientist	NOUN	учёный	m,anim,adjdecl,pl:учёные,gpl:учёных	general	
+researcher	NOUN	исследователь	m,anim	general	
+student	NOUN	студент	m,anim	general	
+professor	NOUN	профессор	m,anim,forms:nompl=профессора	general	
+teacher	NOUN	учитель	m,anim	general	
+nurse	NOUN	медсестра	f,anim	general	
+time	NOUN	время	n,forms:nompl=времена;genpl=времён;datpl=временам;accpl=времена;instpl=временами;preppl=временах	general	
+year	NOUN	год	m,gpl:лет,forms:nompl=годы;datpl=годам;accpl=годы;instpl=годами;preppl=годах	general	
+day	NOUN	день	m,gpl:дней,forms:nompl=дни;datpl=дням;accpl=дни;instpl=днями;preppl=днях	general	
+week	NOUN	неделя	f	general	
+month	NOUN	месяц	m,gpl:месяцев	general	
+century	NOUN	век	m,forms:nompl=века;genpl=веков;datpl=векам;accpl=века;instpl=веками;preppl=веках	general	
+period	NOUN	период	m	general	
+era	NOUN	эпоха	f	general	
+age	NOUN	возраст	m	general	
+place	NOUN	место	n	general	
+part	NOUN	часть	f	general	
+side	NOUN	сторона	f	general	
+way	NOUN	путь	m,gpl:путей,forms:nompl=пути;datpl=путям;accpl=пути;instpl=путями;preppl=путях	general	
+case	NOUN	случай	m	general	
+example	NOUN	пример	m	general	
+result	NOUN	результат	m	general	
+effect	NOUN	эффект	m	general	
+cause	NOUN	причина	f	general	
+reason	NOUN	причина	f	general	
+problem	NOUN	проблема	f	general	
+question	NOUN	вопрос	m	general	
+answer	NOUN	ответ	m	general	
+idea	NOUN	идея	f	general	
+thought	NOUN	мысль	f	general	
+opinion	NOUN	мнение	n	general	
+view	NOUN	взгляд	m	general	
+work	NOUN	работа	f	general	
+study	NOUN	исследование	n	general	
+research	NOUN	исследование	n	general	
+analysis	NOUN	анализ	m	general	
+method	NOUN	метод	m	general	
+approach	NOUN	подход	m	general	
+process	NOUN	процесс	m	general	
+system	NOUN	система	f	general	
+structure	NOUN	структура	f	general	
+form	NOUN	форма	f	general	
+level	NOUN	уровень	m,gpl:уровней	general	
+type	NOUN	тип	m	general	
+kind	NOUN	вид	m	general	
+group	NOUN	группа	f	general	
+set	NOUN	набор	m	general	
+number	NOUN	число	n	general	
+amount	NOUN	количество	n	general	
+value	NOUN	значение	n	general	
+size	NOUN	размер	m	general	
+color	NOUN	цвет	m,pl:цвета,gpl:цветов	general	
+colour	NOUN	цвет	m,pl:цвета,gpl:цветов	general	
+light	NOUN	свет	m	general	
+line	NOUN	линия	f	general	
+point	NOUN	точка	f	general	
+space	NOUN	пространство	n	general	
+area	NOUN	область	f	general	
+surface	NOUN	поверхность	f	general	
+figure	NOUN	фигура	f	general	
+image	NOUN	изображение	n	general	
+picture	NOUN	картина	f	general	
+word	NOUN	слово	n	general	
+text	NOUN	текст	m	general	
+book	NOUN	книга	f	general	
+page	NOUN	страница	f	general	
+story	NOUN	рассказ	m	general	
+novel	NOUN	роман	m	general	
+poem	NOUN	стихотворение	n	general	
+art	NOUN	искусство	n	general	
+culture	NOUN	культура	f	general	
+history	NOUN	история	f	general	
+science	NOUN	наука	f	general	
+medicine	NOUN	лекарство	n	general	в медицине — «медицина» (см. med)
+health	NOUN	здоровье	n	general	
+body	NOUN	тело	n	general	
+head	NOUN	голова	f	general	
+heart	NOUN	сердце	n,gpl:сердец	general	
+blood	NOUN	кровь	f	general	
+cell	NOUN	ячейка	f	general	в медицине — «клетка» (см. med)
+tissue	NOUN	ткань	f	general	
+organ	NOUN	орган	m	general	
+bone	NOUN	кость	f	general	
+skin	NOUN	кожа	f	general	
+eye	NOUN	глаз	m,forms:nompl=глаза;genpl=глаз;datpl=глазам;accpl=глаза;instpl=глазами;preppl=глазах	general	
+hand	NOUN	рука	f	general	
+face	NOUN	лицо	n	general	
+name	NOUN	имя	n,forms:nompl=имена;genpl=имён;datpl=именам;accpl=имена;instpl=именами;preppl=именах	general	
+life	NOUN	жизнь	f	general	
+death	NOUN	смерть	f	general	
+world	NOUN	мир	m	general	
+country	NOUN	страна	f	general	
+city	NOUN	город	m	general	
+hospital	NOUN	больница	f	general	
+home	NOUN	дом	m	general	
+house	NOUN	дом	m	general	
+room	NOUN	комната	f	general	
+water	NOUN	вода	f	general	
+food	NOUN	пища	f	general	
+air	NOUN	воздух	m	general	
+fire	NOUN	огонь	m,gpl:огней	general	
+earth	NOUN	земля	f	general	
+nature	NOUN	природа	f	general	
+force	NOUN	сила	f	general	
+energy	NOUN	энергия	f	general	
+power	NOUN	сила	f	general	
+matter	NOUN	вещество	n	general	
+element	NOUN	элемент	m	general	
+component	NOUN	компонент	m	general	
+factor	NOUN	фактор	m	general	
+aspect	NOUN	аспект	m	general	
+feature	NOUN	особенность	f	general	
+characteristic	NOUN	характеристика	f	general	
+property	NOUN	свойство	n	general	
+quality	NOUN	качество	n	general	
+detail	NOUN	деталь	f	general	
+beginning	NOUN	начало	n	general	
+end	NOUN	конец	m,gpl:концов	general	
+center	NOUN	центр	m	general	
+centre	NOUN	центр	m	general	
+edge	NOUN	край	m,gpl:краёв	general	
+corner	NOUN	угол	m,gpl:углов	general	
+top	NOUN	верх	m	general	
+bottom	NOUN	низ	m	general	
+right	NOUN	право	n	general	
+background	NOUN	фон	m	general	
+foreground	NOUN	передний план	m	general	
+context	NOUN	контекст	m	general	
+meaning	NOUN	значение	n	general	
+sense	NOUN	смысл	m	general	
+purpose	NOUN	цель	f	general	
+goal	NOUN	цель	f	general	
+aim	NOUN	цель	f	general	
+task	NOUN	задача	f	general	
+role	NOUN	роль	f,gpl:ролей	general	
+position	NOUN	позиция	f	general	
+relation	NOUN	отношение	n	general	
+relationship	NOUN	связь	f	general	
+connection	NOUN	связь	f	general	
+difference	NOUN	разница	f	general	
+similarity	NOUN	сходство	n	general	
+comparison	NOUN	сравнение	n	general	
+conclusion	NOUN	вывод	m	general	
+evidence	NOUN	доказательство	n	general	
+information	NOUN	информация	f	general	
+data	NOUN	данные	forms:nompl=данные;genpl=данных;datpl=данным;accpl=данные;instpl=данными;preppl=данных	general	множественное число
+datum	NOUN	данные	forms:nompl=данные;genpl=данных;datpl=данным;accpl=данные;instpl=данными;preppl=данных	general	форма datum от data
+knowledge	NOUN	знание	n	general	
+experience	NOUN	опыт	m	general	
+skill	NOUN	навык	m	general	
+ability	NOUN	способность	f	general	
+attention	NOUN	внимание	n	general	
+interest	NOUN	интерес	m	general	
+emotion	NOUN	эмоция	f	general	
+feeling	NOUN	чувство	n	general	
+mood	NOUN	настроение	n	general	
+atmosphere	NOUN	атмосфера	f	general	
+impression	NOUN	впечатление	n	general	
+expression	NOUN	выражение	n	general	
+movement	NOUN	движение	n	general	
+style	NOUN	стиль	m,gpl:стилей	general	
+technique	NOUN	техника	f	general	
+tradition	NOUN	традиция	f	general	
+influence	NOUN	влияние	n	general	
+inspiration	NOUN	вдохновение	n	general	
+original	NOUN	оригинал	m	general	
+copy	NOUN	копия	f	general	
+version	NOUN	версия	f	general	
+document	NOUN	документ	m	general	
+article	NOUN	статья	f	general	
+journal	NOUN	журнал	m	general	
+publication	NOUN	публикация	f	general	
+collection	NOUN	коллекция	f	general	
+museum	NOUN	музей	m	general	
+gallery	NOUN	галерея	f	general	
+exhibition	NOUN	выставка	f	general	
+audience	NOUN	публика	f	general	
+viewer	NOUN	зритель	m,anim	general	
+critic	NOUN	критик	m,anim	general	
+society	NOUN	общество	n	general	
+community	NOUN	сообщество	n	general	
+population	NOUN	население	n	general	
+public	NOUN	общественность	f	general	
+government	NOUN	правительство	n	general	
+company	NOUN	компания	f	general	
+market	NOUN	рынок	m	general	
+price	NOUN	цена	f	general	
+cost	NOUN	стоимость	f	general	
+money	NOUN	деньги	forms:nompl=деньги;genpl=денег;datpl=деньгам;accpl=деньги;instpl=деньгами;preppl=деньгах	general	множественное число
+solution	NOUN	решение	n	general	
+decision	NOUN	решение	n	general	
+choice	NOUN	выбор	m	general	
+opportunity	NOUN	возможность	f	general	
+possibility	NOUN	возможность	f	general	
+condition	NOUN	условие	n	general	в медицине — «состояние» (см. med)
+state	NOUN	состояние	n	general	
+development	NOUN	развитие	n	general	
+progress	NOUN	прогресс	m	general	
+growth	NOUN	рост	m	general	
+decline	NOUN	снижение	n	general	
+increase	NOUN	увеличение	n	general	
+decrease	NOUN	уменьшение	n	general	
+use	NOUN	использование	n	general	
+application	NOUN	применение	n	general	
+function	NOUN	функция	f	general	
+theory	NOUN	теория	f	general	
+hypothesis	NOUN	гипотеза	f	general	
+experiment	NOUN	эксперимент	m	general	
+model	NOUN	модель	f	general	
+concept	NOUN	понятие	n	general	
+principle	NOUN	принцип	m	general	
+rule	NOUN	правило	n	general	
+law	NOUN	закон	m	general	
+fact	NOUN	факт	m	general	
+argument	NOUN	аргумент	m	general	
+statement	NOUN	утверждение	n	general	
+description	NOUN	описание	n	general	
+definition	NOUN	определение	n	general	
+term	NOUN	термин	m	general	
+phrase	NOUN	фраза	f	general	
+sentence	NOUN	предложение	n	general	
+paragraph	NOUN	абзац	m	general	
+chapter	NOUN	глава	f	general	
+section	NOUN	раздел	m	general	
+language	NOUN	язык	m	general	
+speech	NOUN	речь	f	general	
+sound	NOUN	звук	m	general	
+voice	NOUN	голос	m	general	
+music	NOUN	музыка	f	general	
+song	NOUN	песня	f,gpl:песен	general	
+film	NOUN	фильм	m	general	
+movie	NOUN	фильм	m	general	
+photograph	NOUN	фотография	f	general	
+photo	NOUN	фотография	f	general	
+computer	NOUN	компьютер	m	general	
+program	NOUN	программа	f	general	
+technology	NOUN	технология	f	general	
+internet	NOUN	интернет	m	general	
+network	NOUN	сеть	f	general	
+methodology	NOUN	методология	f	general	
+variable	NOUN	переменная	f	general	
+parameter	NOUN	параметр	m	general	
+correlation	NOUN	корреляция	f	general	
+probability	NOUN	вероятность	f	general	
+observation	NOUN	наблюдение	n	general	
+measurement	NOUN	измерение	n	general	
+algorithm	NOUN	алгоритм	m	general	
+field	NOUN	область	f	general	
+paper	NOUN	статья	f	general	
+university	NOUN	университет	m	general	
+education	NOUN	образование	n	general	
+discovery	NOUN	открытие	n	general	
+innovation	NOUN	инновация	f	general	
+# --- Общеупотребительные прилагательные ---
+good	ADJ	хороший	comp:лучше,sup:лучший	general	
+well	ADV	хорошо	comp:лучше,sup:лучше	general	
+bad	ADJ	плохой	comp:хуже,compattr:худший,sup:худший	general	
+new	ADJ	новый		general	
+old	ADJ	старый		general	
+large	ADJ	большой		general	
+small	ADJ	маленький		general	
+big	ADJ	большой		general	
+little	ADJ	маленький		general	
+great	ADJ	великий		general	
+important	ADJ	важный		general	
+significant	ADJ	значительный		general	
+different	ADJ	разный		general	
+similar	ADJ	похожий		general	
+various	ADJ	различный		general	
+common	ADJ	распространённый		general	
+rare	ADJ	редкий		general	
+main	ADJ	главный		general	
+major	ADJ	основной		general	
+minor	ADJ	второстепенный		general	
+first	ADJ	первый		general	
+second	ADJ	второй		general	
+third	ADJ	третий		general	
+last	ADJ	последний		general	
+next	ADJ	следующий		general	
+early	ADJ	ранний		general	
+late	ADJ	поздний		general	
+young	ADJ	молодой		general	
+beautiful	ADJ	красивый		general	
+ugly	ADJ	уродливый		general	
+dark	ADJ	тёмный		general	
+light	ADJ	светлый		general	
+bright	ADJ	яркий		general	
+red	ADJ	красный		general	
+blue	ADJ	синий		general	
+green	ADJ	зелёный		general	
+white	ADJ	белый		general	
+black	ADJ	чёрный		general	
+yellow	ADJ	жёлтый		general	
+golden	ADJ	золотой		general	
+clear	ADJ	ясный		general	
+strong	ADJ	сильный		general	
+weak	ADJ	слабый		general	
+high	ADJ	высокий		general	
+low	ADJ	низкий		general	
+long	ADJ	длинный		general	
+short	ADJ	короткий		general	
+wide	ADJ	широкий		general	
+narrow	ADJ	узкий		general	
+deep	ADJ	глубокий		general	
+full	ADJ	полный		general	
+empty	ADJ	пустой		general	
+open	ADJ	открытый		general	
+closed	ADJ	закрытый		general	
+free	ADJ	свободный		general	
+modern	ADJ	современный		general	
+ancient	ADJ	древний		general	
+classical	ADJ	классический		general	
+contemporary	ADJ	современный		general	
+abstract	ADJ	абстрактный		general	
+realistic	ADJ	реалистичный		general	
+visual	ADJ	визуальный		general	
+medical	ADJ	медицинский		general	
+clinical	ADJ	клинический		general	
+scientific	ADJ	научный		general	
+artistic	ADJ	художественный		general	
+cultural	ADJ	культурный		general	
+historical	ADJ	исторический		general	
+human	ADJ	человеческий		general	
+social	ADJ	социальный		general	
+natural	ADJ	естественный		general	
+physical	ADJ	физический		general	
+mental	ADJ	психический		general	
+emotional	ADJ	эмоциональный		general	
+possible	ADJ	возможный		general	
+impossible	ADJ	невозможный		general	
+necessary	ADJ	необходимый		general	
+available	ADJ	доступный		general	
+likely	ADJ	вероятный		general	
+unlikely	ADJ	маловероятный		general	
+certain	ADJ	определённый		general	
+uncertain	ADJ	неопределённый		general	
+true	ADJ	истинный		general	
+false	ADJ	ложный		general	
+real	ADJ	реальный		general	
+actual	ADJ	фактический		general	
+specific	ADJ	конкретный		general	
+general	ADJ	общий		general	
+particular	ADJ	частный		general	
+special	ADJ	особый		general	
+unique	ADJ	уникальный		general	
+typical	ADJ	типичный		general	
+usual	ADJ	обычный		general	
+unusual	ADJ	необычный		general	
+interesting	ADJ	интересный		general	
+boring	ADJ	скучный		general	
+complex	ADJ	сложный		general	
+simple	ADJ	простой		general	
+difficult	ADJ	трудный		general	
+easy	ADJ	лёгкий		general	
+hard	ADJ	трудный		general	
+soft	ADJ	мягкий		general	
+warm	ADJ	тёплый		general	
+cold	ADJ	холодный		general	
+hot	ADJ	горячий		general	
+dry	ADJ	сухой		general	
+wet	ADJ	влажный		general	
+clean	ADJ	чистый		general	
+dirty	ADJ	грязный		general	
+rich	ADJ	богатый		general	
+poor	ADJ	бедный		general	
+expensive	ADJ	дорогой		general	
+cheap	ADJ	дешёвый		general	
+valuable	ADJ	ценный		general	
+famous	ADJ	знаменитый		general	
+popular	ADJ	популярный		general	
+successful	ADJ	успешный		general	
+effective	ADJ	эффективный		general	
+efficient	ADJ	эффективный		general	
+safe	ADJ	безопасный		general	
+dangerous	ADJ	опасный		general	
+harmful	ADJ	вредный		general	
+useful	ADJ	полезный		general	
+serious	ADJ	серьёзный		general	
+public	ADJ	общественный		general	
+private	ADJ	частный		general	
+local	ADJ	местный		general	
+global	ADJ	глобальный		general	
+national	ADJ	национальный		general	
+international	ADJ	международный		general	
+political	ADJ	политический		general	
+economic	ADJ	экономический		general	
+financial	ADJ	финансовый		general	
+technical	ADJ	технический		general	
+practical	ADJ	практический		general	
+theoretical	ADJ	теоретический		general	
+additional	ADJ	дополнительный		general	
+basic	ADJ	базовый		general	
+primary	ADJ	первичный		general	
+secondary	ADJ	вторичный		general	
+initial	ADJ	начальный		general	
+final	ADJ	конечный		general	
+complete	ADJ	полный		general	
+whole	ADJ	целый		general	
+separate	ADJ	отдельный		general	
+single	ADJ	единственный		general	
+double	ADJ	двойной		general	
+multiple	ADJ	множественный		general	
+present	ADJ	настоящий		general	
+past	ADJ	прошлый		general	
+future	ADJ	будущий		general	
+current	ADJ	текущий		general	
+recent	ADJ	недавний		general	
+original	ADJ	оригинальный		general	
+traditional	ADJ	традиционный		general	
+innovative	ADJ	инновационный		general	
+creative	ADJ	творческий		general	
+expressive	ADJ	выразительный		general	
+impressive	ADJ	впечатляющий		general	
+remarkable	ADJ	замечательный		general	
+outstanding	ADJ	выдающийся		general	
+harmonious	ADJ	гармоничный		general	
+balanced	ADJ	сбалансированный		general	
+dynamic	ADJ	динамичный		general	
+static	ADJ	статичный		general	
+precise	ADJ	точный		general	
+accurate	ADJ	точный		general	
+rough	ADJ	грубый		general	
+smooth	ADJ	гладкий		general	
+sharp	ADJ	острый		general	
+dull	ADJ	тусклый		general	
+other	ADJ	другой		general	
+own	ADJ	собственный		general	
+same	ADJ	тот же		general	
+right	ADJ	правый		general	
+left	ADJ	левый		general	
+# --- Наречия ---
+very	ADV	очень		general	
+much	ADV	много		general	
+many	ADJ	много		general	квантификатор: много + род. п.
+more	ADV	более	comp:больше	general	
+most	ADV	наиболее		general	
+less	ADV	менее		general	
+often	ADV	часто		general	
+always	ADV	всегда		general	
+never	ADV	никогда		general	
+sometimes	ADV	иногда		general	
+usually	ADV	обычно		general	
+rarely	ADV	редко		general	
+already	ADV	уже		general	
+still	ADV	всё ещё		general	
+also	ADV	также		general	
+too	ADV	слишком		general	
+only	ADV	только		general	
+just	ADV	просто		general	
+even	ADV	даже		general	
+badly	ADV	плохо		general	
+quickly	ADV	быстро		general	
+slowly	ADV	медленно		general	
+now	ADV	сейчас		general	
+then	ADV	затем		general	
+today	ADV	сегодня		general	
+again	ADV	снова		general	
+together	ADV	вместе		general	
+especially	ADV	особенно		general	
+probably	ADV	вероятно		general	
+really	ADV	действительно		general	
+highly	ADV	высоко		general	
+widely	ADV	широко		general	
+generally	ADV	обычно		general	
+specifically	ADV	конкретно		general	
+clearly	ADV	ясно		general	
+simply	ADV	просто		general	
+directly	ADV	напрямую		general	
+immediately	ADV	немедленно		general	
+gradually	ADV	постепенно		general	
+significantly	ADV	значительно		general	
+slightly	ADV	слегка		general	
+approximately	ADV	приблизительно		general	
+exactly	ADV	точно		general	
+nearly	ADV	почти		general	
+almost	ADV	почти		general	
+quite	ADV	довольно		general	
+rather	ADV	скорее		general	
+completely	ADV	полностью		general	
+partially	ADV	частично		general	
+mainly	ADV	главным образом		general	
+mostly	ADV	преимущественно		general	
+successfully	ADV	успешно		general	
+effectively	ADV	эффективно		general	
+actively	ADV	активно		general	
+strongly	ADV	сильно		general	
+weakly	ADV	слабо		general	
+deeply	ADV	глубоко		general	
+carefully	ADV	тщательно		general	
+closely	ADV	внимательно		general	
+suddenly	ADV	внезапно		general	
+finally	ADV	наконец		general	
+initially	ADV	первоначально		general	
+traditionally	ADV	традиционно		general	
+historically	ADV	исторически		general	
+visually	ADV	визуально		general	
+emotionally	ADV	эмоционально		general	
+physically	ADV	физически		general	
+mentally	ADV	умственно		general	
+socially	ADV	социально		general	
+culturally	ADV	культурно		general	
+scientifically	ADV	научно		general	
+medically	ADV	медицински		general	
+clinically	ADV	клинически		general	
+artistically	ADV	художественно		general	
+relatively	ADV	относительно		general	
+absolutely	ADV	абсолютно		general	
+obviously	ADV	очевидно		general	
+apparently	ADV	по-видимому		general	
+certainly	ADV	конечно		general	
+perhaps	ADV	возможно		general	
+maybe	ADV	может быть		general	
+indeed	ADV	действительно		general	
+however	ADV	однако		general	
+therefore	ADV	поэтому		general	
+moreover	ADV	более того		general	
+thus	ADV	таким образом		general	
+furthermore	ADV	кроме того		general	
+nevertheless	ADV	тем не менее		general	
+meanwhile	ADV	тем временем		general	
+overall	ADV	в целом		general	
+elsewhere	ADV	в другом месте		general	
+somewhere	ADV	где-то		general	
+everywhere	ADV	везде		general	
+once	ADV	однажды		general	
+twice	ADV	дважды		general	
+ago	ADV	назад		general	
+soon	ADV	вскоре		general	
+early	ADV	рано		general	
+late	ADV	поздно		general	
+far	ADV	далеко		general	
+close	ADV	близко		general	
+fast	ADV	быстро		general	
+hard	ADV	усердно		general	
+later	ADV	позже		general	
+earlier	ADV	раньше		general	
+better	ADV	лучше		general	
+worse	ADV	хуже		general	
+long	ADV	долго		general	
+short	ADV	коротко		general	
+# --- Числительные ---
+one	NUM	один		general	
+two	NUM	два		general	
+three	NUM	три		general	
+four	NUM	четыре		general	
+five	NUM	пять		general	
+six	NUM	шесть		general	
+seven	NUM	семь		general	
+eight	NUM	восемь		general	
+nine	NUM	девять		general	
+ten	NUM	десять		general	
+hundred	NUM	сто		general	
+thousand	NUM	тысяча	f	general	
+million	NUM	миллион	m	general	
+single	NUM	один		general	
+# --- Предметная область: медицина (научные статьи) ---
+disease	NOUN	болезнь	f	med	
+disorder	NOUN	расстройство	n	med	
+illness	NOUN	болезнь	f	med	
+condition	NOUN	состояние	n	med	
+syndrome	NOUN	синдром	m	med	
+symptom	NOUN	симптом	m	med	
+sign	NOUN	признак	m	med	
+diagnosis	NOUN	диагноз	m	med	
+diagnostic	ADJ	диагностический		med	
+treatment	NOUN	лечение	n	med	
+therapy	NOUN	терапия	f	med	
+therapeutic	ADJ	терапевтический		med	
+drug	NOUN	препарат	m	med	
+medication	NOUN	лекарство	n	med	
+medicine	NOUN	медицина	f	med	
+dose	NOUN	доза	f	med	
+dosage	NOUN	дозировка	f	med	
+prescription	NOUN	рецепт	m	med	
+surgery	NOUN	операция	f	med	
+surgical	ADJ	хирургический		med	
+operation	NOUN	операция	f	med	
+clinic	NOUN	клиника	f	med	
+physician	NOUN	врач	m,anim	med	
+nurse	NOUN	медсестра	f,anim	med	
+medical	ADJ	медицинский		med	
+healthcare	NOUN	здравоохранение	n	med	
+health	NOUN	здоровье	n	med	
+infection	NOUN	инфекция	f	med	
+infectious	ADJ	инфекционный		med	
+virus	NOUN	вирус	m	med	
+viral	ADJ	вирусный		med	
+bacterium	NOUN	бактерия	f	med	
+bacteria	NOUN	бактерия	f	med	форма множественного числа
+bacterial	ADJ	бактериальный		med	
+immune	ADJ	иммунный		med	
+immunity	NOUN	иммунитет	m	med	
+antibody	NOUN	антитело	n	med	
+antigen	NOUN	антиген	m	med	
+vaccine	NOUN	вакцина	f	med	
+vaccination	NOUN	вакцинация	f	med	
+inflammation	NOUN	воспаление	n	med	
+inflammatory	ADJ	воспалительный		med	
+pain	NOUN	боль	f	med	
+painful	ADJ	болезненный		med	
+fever	NOUN	лихорадка	f	med	
+cough	NOUN	кашель	m	med	
+headache	NOUN	головная боль	f	med	
+tumor	NOUN	опухоль	f	med	
+tumour	NOUN	опухоль	f	med	
+cancer	NOUN	рак	m	med	
+oncology	NOUN	онкология	f	med	
+cell	NOUN	клетка	f	med	
+cellular	ADJ	клеточный		med	
+tissue	NOUN	ткань	f	med	
+organ	NOUN	орган	m	med	
+cardiovascular	ADJ	сердечно-сосудистый		med	
+cardiac	ADJ	сердечный		med	
+heart	NOUN	сердце	n,gpl:сердец	med	
+pressure	NOUN	давление	n	med	
+hypertension	NOUN	гипертония	f	med	
+artery	NOUN	артерия	f	med	
+vein	NOUN	вена	f	med	
+vessel	NOUN	сосуд	m	med	
+brain	NOUN	мозг	m	med	
+neural	ADJ	нейронный		med	
+nerve	NOUN	нерв	m	med	
+nervous	ADJ	нервный		med	
+lung	NOUN	лёгкое	n,forms:nompl=лёгкие;genpl=лёгких;datpl=лёгким;accpl=лёгкие;instpl=лёгкими;preppl=лёгких	med	
+respiratory	ADJ	дыхательный		med	
+liver	NOUN	печень	f	med	
+kidney	NOUN	почка	f	med	
+stomach	NOUN	желудок	m	med	
+intestinal	ADJ	кишечный		med	
+digestive	ADJ	пищеварительный		med	
+muscle	NOUN	мышца	f	med	
+gene	NOUN	ген	m	med	
+genetic	ADJ	генетический		med	
+dna	NOUN	ДНК	f,inv	med	
+protein	NOUN	белок	m	med	
+enzyme	NOUN	фермент	m	med	
+hormone	NOUN	гормон	m	med	
+metabolism	NOUN	метаболизм	m	med	
+chronic	ADJ	хронический		med	
+acute	ADJ	острый		med	
+severe	ADJ	тяжёлый		med	
+mild	ADJ	лёгкий		med	
+moderate	ADJ	умеренный		med	
+fatal	ADJ	смертельный		med	
+mortality	NOUN	смертность	f	med	
+morbidity	NOUN	заболеваемость	f	med	
+recovery	NOUN	выздоровление	n	med	
+rehabilitation	NOUN	реабилитация	f	med	
+prevention	NOUN	профилактика	f	med	
+preventive	ADJ	профилактический		med	
+screening	NOUN	скрининг	m	med	
+examination	NOUN	обследование	n	med	
+laboratory	NOUN	лаборатория	f	med	
+laboratory	ADJ	лабораторный		med	
+sample	NOUN	образец	m,gpl:образцов	med	
+biopsy	NOUN	биопсия	f	med	
+imaging	NOUN	визуализация	f	med	
+mri	NOUN	МРТ	f,inv	med	
+ct	NOUN	КТ	f,inv	med	
+x-ray	NOUN	рентген	m	med	
+ultrasound	NOUN	ультразвук	m	med	
+risk	NOUN	риск	m	med	
+complication	NOUN	осложнение	n	med	
+prognosis	NOUN	прогноз	m	med	
+trial	NOUN	испытание	n	med	
+cohort	NOUN	когорта	f	med	
+control	NOUN	контроль	m	med	
+control	ADJ	контрольный		med	
+placebo	NOUN	плацебо	n,inv	med	
+random	ADJ	случайный		med	
+randomized	ADJ	рандомизированный		med	
+statistical	ADJ	статистический		med	
+statistics	NOUN	статистика	f	med	
+outcome	NOUN	исход	m	med	
+survival	NOUN	выживаемость	f	med	
+guideline	NOUN	рекомендация	f	med	
+protocol	NOUN	протокол	m	med	
+evidence	NOUN	доказательство	n	med	
+adverse	ADJ	неблагоприятный		med	
+injection	NOUN	инъекция	f	med	
+tablet	NOUN	таблетка	f	med	
+pill	NOUN	таблетка	f	med	
+capsule	NOUN	капсула	f	med	
+ointment	NOUN	мазь	f	med	
+solution	NOUN	раствор	m	med	
+fluid	NOUN	жидкость	f	med	
+chart	NOUN	карта	f	med	
+record	NOUN	запись	f	med	
+procedure	NOUN	процедура	f	med	
+intervention	NOUN	вмешательство	n	med	
+leukocyte	NOUN	лейкоцит	m,anim	med	
+hemoglobin	NOUN	гемоглобин	m	med	
+glucose	NOUN	глюкоза	f	med	
+cholesterol	NOUN	холестерин	m	med	
+diabetes	NOUN	диабет	m,pl:диабет	med	
+asthma	NOUN	астма	f	med	
+pneumonia	NOUN	пневмония	f	med	
+influenza	NOUN	грипп	m	med	
+tuberculosis	NOUN	туберкулёз	m	med	
+stroke	NOUN	инсульт	m	med	
+infarct	NOUN	инфаркт	m	med	
+obesity	NOUN	ожирение	n	med	
+allergy	NOUN	аллергия	f	med	
+allergic	ADJ	аллергический		med	
+treat	VERB	лечить	impf,pair:вылечить,pp:вылечен	med	
+diagnose	VERB	диагностировать	impf	med	
+suffer	VERB	страдать	impf	med	
+die	VERB	умирать	impf,pair:умереть	med	
+kill	VERB	убивать	impf,pair:убить,pp:убит	med	
+cure	VERB	излечивать	impf,pair:излечить	med	
+heal	VERB	исцелять	impf,pair:исцелить	med	
+operate	VERB	оперировать	impf	med	
+prescribe	VERB	назначать	impf,pair:назначить,pp:назначен	med	
+hospitalize	VERB	госпитализировать	impf	med	
+recover	VERB	выздоравливать	impf,pair:выздороветь	med	
+infect	VERB	инфицировать	impf	med	
+vaccinate	VERB	вакцинировать	impf	med	
+smoking	NOUN	курение	n	med	
+therapy	NOUN	терапия	f	med	
+clinical trial	PHRASE	клиническое исследование	n,pl:клинические исследования	med	
+clinical study	PHRASE	клиническое исследование	n	med	
+side effect	PHRASE	побочный эффект	m,pl:побочные эффекты	med	
+adverse event	PHRASE	нежелательное явление	n	med	
+blood test	PHRASE	анализ крови	m,pl:анализы крови	med	
+blood pressure	PHRASE	кровяное давление	n	med	
+heart disease	PHRASE	болезнь сердца	f,pl:болезни сердца	med	
+cardiovascular disease	PHRASE	сердечно-сосудистое заболевание	n	med	
+immune system	PHRASE	иммунная система	f	med	
+nervous system	PHRASE	нервная система	f	med	
+risk factor	PHRASE	фактор риска	m,pl:факторы риска	med	
+quality of life	PHRASE	качество жизни	n	med	
+life expectancy	PHRASE	ожидаемая продолжительность жизни	f	med	
+public health	PHRASE	общественное здравоохранение	n	med	
+health care	PHRASE	здравоохранение	n	med	
+control group	PHRASE	контрольная группа	f	med	
+data analysis	PHRASE	анализ данных	m	med	
+scientific article	PHRASE	научная статья	f,pl:научные статьи	med	
+evidence based medicine	PHRASE	доказательная медицина	f	med	
+in vitro	PHRASE	в пробирке		med	
+in vivo	PHRASE	в живом организме		med	
+double blind	PHRASE	двойной слепой		med	
+follow up	PHRASE	последующее наблюдение	n	med	
+mental disorder	PHRASE	психическое расстройство	n	med	
+chronic disease	PHRASE	хроническое заболевание	n	med	
+infectious disease	PHRASE	инфекционное заболевание	n	med	
+randomized controlled trial	PHRASE	рандомизированное контролируемое исследование	n	med	
+# --- Предметная область: критика изобразительного искусства ---
+art	NOUN	искусство	n	art	
+artwork	NOUN	произведение	n	art	
+artist	NOUN	художник	m,anim	art	
+painting	NOUN	картина	f	art	
+painter	NOUN	живописец	m,anim	art	
+picture	NOUN	картина	f	art	
+canvas	NOUN	холст	m	art	
+brush	NOUN	кисть	f	art	
+brushstroke	NOUN	мазок	m	art	
+color	NOUN	цвет	m,pl:цвета,gpl:цветов	art	
+colour	NOUN	цвет	m,pl:цвета,gpl:цветов	art	
+palette	NOUN	палитра	f	art	
+hue	NOUN	оттенок	m	art	
+tone	NOUN	тон	m	art	
+shade	NOUN	оттенок	m	art	
+shadow	NOUN	тень	f	art	
+contrast	NOUN	контраст	m	art	
+composition	NOUN	композиция	f	art	
+form	NOUN	форма	f	art	
+shape	NOUN	форма	f	art	
+texture	NOUN	текстура	f	art	
+pattern	NOUN	узор	m	art	
+style	NOUN	стиль	m,gpl:стилей	art	
+technique	NOUN	техника	f	art	
+portrait	NOUN	портрет	m	art	
+landscape	NOUN	пейзаж	m	art	
+genre	NOUN	жанр	m	art	
+scene	NOUN	сцена	f	art	
+masterpiece	NOUN	шедевр	m	art	
+creation	NOUN	творение	n	art	
+exhibition	NOUN	выставка	f	art	
+museum	NOUN	музей	m	art	
+gallery	NOUN	галерея	f	art	
+collector	NOUN	коллекционер	m,anim	art	
+criticism	NOUN	критика	f	art	
+review	NOUN	рецензия	f	art	
+impressionism	NOUN	импрессионизм	m	art	
+expressionism	NOUN	экспрессионизм	m	art	
+cubism	NOUN	кубизм	m	art	
+surrealism	NOUN	сюрреализм	m	art	
+romanticism	NOUN	романтизм	m	art	
+realism	NOUN	реализм	m	art	
+baroque	NOUN	барокко	m,inv	art	
+renaissance	NOUN	Ренессанс	m	art	
+avant-garde	NOUN	авангард	m	art	
+metaphor	NOUN	метафора	f	art	
+allegory	NOUN	аллегория	f	art	
+narrative	NOUN	повествование	n	art	
+subject	NOUN	сюжет	m	art	
+perspective	NOUN	перспектива	f	art	
+proportion	NOUN	пропорция	f	art	
+harmony	NOUN	гармония	f	art	
+balance	NOUN	баланс	m	art	
+rhythm	NOUN	ритм	m	art	
+dynamics	NOUN	динамика	f	art	
+gesture	NOUN	жест	m	art	
+pose	NOUN	поза	f	art	
+drapery	NOUN	драпировка	f	art	
+frame	NOUN	рама	f	art	
+oil	NOUN	масло	n	art	
+watercolor	NOUN	акварель	f	art	
+watercolour	NOUN	акварель	f	art	
+acrylic	NOUN	акрил	m	art	
+fresco	NOUN	фреска	f	art	
+mural	NOUN	роспись	f	art	
+icon	NOUN	икона	f	art	
+ornament	NOUN	орнамент	m	art	
+decoration	NOUN	украшение	n	art	
+sculpture	NOUN	скульптура	f	art	
+sculptor	NOUN	скульптор	m,anim	art	
+statue	NOUN	статуя	f	art	
+marble	NOUN	мрамор	m	art	
+bronze	NOUN	бронза	f	art	
+wood	NOUN	дерево	n	art	
+stone	NOUN	камень	m,gpl:камней	art	
+metal	NOUN	металл	m	art	
+glass	NOUN	стекло	n	art	
+ceramic	NOUN	керамика	f	art	
+clay	NOUN	глина	f	art	
+paint	NOUN	краска	f	art	
+pigment	NOUN	пигмент	m	art	
+sketch	NOUN	эскиз	m	art	
+draft	NOUN	набросок	m	art	
+drawing	NOUN	рисунок	m	art	
+engraving	NOUN	гравюра	f	art	
+print	NOUN	оттиск	m	art	
+reproduction	NOUN	репродукция	f	art	
+miniature	NOUN	миниатюра	f	art	
+studio	NOUN	мастерская	f	art	
+exhibit	NOUN	экспонат	m	art	
+artifact	NOUN	артефакт	m	art	
+antique	NOUN	антиквариат	m	art	
+antique	ADJ	антикварный		art	
+heritage	NOUN	наследие	n	art	
+master	NOUN	мастер	m,anim	art	
+pupil	NOUN	ученик	m,anim	art	
+patron	NOUN	покровитель	m,anim	art	
+commission	NOUN	заказ	m	art	
+provenance	NOUN	происхождение	n	art	
+attribution	NOUN	атрибуция	f	art	
+restoration	NOUN	реставрация	f	art	
+restorer	NOUN	реставратор	m,anim	art	
+varnish	NOUN	лак	m	art	
+work	NOUN	произведение	n	art	
+subject	ADJ	подверженный		art	
+aesthetic	ADJ	эстетический		art	
+aesthetics	NOUN	эстетика	f	art	
+beauty	NOUN	красота	f	art	
+decorative	ADJ	декоративный		art	
+symbolic	ADJ	символический		art	
+monumental	ADJ	монументальный		art	
+elegant	ADJ	элегантный		art	
+delicate	ADJ	изысканный		art	
+vivid	ADJ	яркий		art	
+muted	ADJ	приглушённый		art	
+transparent	ADJ	прозрачный		art	
+gloomy	ADJ	мрачный		art	
+serene	ADJ	безмятежный		art	
+dramatic	ADJ	драматичный		art	
+figurative	ADJ	фигуративный		art	
+geometric	ADJ	геометрический		art	
+monochrome	ADJ	монохромный		art	
+iconic	ADJ	знаковый		art	
+timeless	ADJ	вневременной		art	
+profound	ADJ	глубокий		art	
+bold	ADJ	смелый		art	
+exquisite	ADJ	изысканный		art	
+graceful	ADJ	изящный		art	
+masterful	ADJ	мастерский		art	
+subtle	ADJ	тонкий		art	
+striking	ADJ	поразительный		art	
+stunning	ADJ	потрясающий		art	
+depict	VERB	изображать	impf,pair:изобразить	art	
+portray	VERB	изображать	impf,pair:изобразить	art	
+admire	VERB	восхищаться	impf	art	
+hang	VERB	висеть	impf	art	
+frame	VERB	обрамлять	impf	art	
+restore	VERB	реставрировать	impf	art	
+exhibit	VERB	выставлять	impf,pair:выставить,pp:выставлен	art	
+sketch	VERB	набрасывать	impf,pair:набросать	art	
+carve	VERB	высекать	impf,pair:высечь	art	
+mold	VERB	лепить	impf,pair:вылепить	art	
+gild	VERB	золотить	impf,pair:позолотить	art	
+color scheme	PHRASE	цветовая гамма	f	art	
+art critic	PHRASE	художественный критик	m,anim	art	
+art criticism	PHRASE	художественная критика	f	art	
+art history	PHRASE	история искусства	f	art	
+art movement	PHRASE	художественное направление	n	art	
+work of art	PHRASE	произведение искусства	n,pl:произведения искусства	art	
+works of art	PHRASE	произведения искусства		art	
+visual art	PHRASE	изобразительное искусство	n	art	
+fine art	PHRASE	изобразительное искусство	n	art	
+modern art	PHRASE	современное искусство	n	art	
+oil painting	PHRASE	живопись маслом	f	art	
+still life	PHRASE	натюрморт	m	art	
+golden ratio	PHRASE	золотое сечение	n	art	
+art gallery	PHRASE	художественная галерея	f	art	
+19th century	PHRASE	девятнадцатый век	m	art	
+nineteenth century	PHRASE	девятнадцатый век	m	art	
+twentieth century	PHRASE	двадцатый век	m	art	
+20th century	PHRASE	двадцатый век	m	art	
+# --- Имена собственные (демо-тексты) ---
+paris	PROPN	Париж	m	art	
+london	PROPN	Лондон	m	art	
+france	PROPN	Франция	f	art	
+italy	PROPN	Италия	f	art	
+spain	PROPN	Испания	f	art	
+germany	PROPN	Германия	f	art	
+europe	PROPN	Европа	f	art	
+russia	PROPN	Россия	f	art	
+monet	PROPN	Моне	m,inv	art	
+picasso	PROPN	Пикассо	m,inv	art	
+rembrandt	PROPN	Рембрандт	m	art	
+michelangelo	PROPN	Микеланджело	m,inv	art	
+raphael	PROPN	Рафаэль	m,inv	art	
+dali	PROPN	Дали	m,inv	art	
+van gogh	PROPN	Ван Гог	m,inv	art	
+da vinci	PROPN	да Винчи	m,inv	art	
+louvre	PROPN	Лувр	m	art	
+hermitage	PROPN	Эрмитаж	m	art	
+# --- Общие обороты (пословно-оборотный перевод) ---
+in order to	PHRASE	чтобы		general	
+as well as	PHRASE	а также		general	
+a lot of	PHRASE	много		general	
+lots of	PHRASE	много		general	
+because of	PHRASE	из-за		general	
+due to	PHRASE	из-за		general	
+such as	PHRASE	такие как		general	
+for example	PHRASE	например		general	
+for instance	PHRASE	например		general	
+in addition	PHRASE	кроме того		general	
+in addition to	PHRASE	в дополнение к		general	
+on the other hand	PHRASE	с другой стороны		general	
+first of all	PHRASE	прежде всего		general	
+at least	PHRASE	по крайней мере		general	
+as a result	PHRASE	в результате		general	
+in conclusion	PHRASE	в заключение		general	
+in general	PHRASE	в целом		general	
+in particular	PHRASE	в частности		general	
+in fact	PHRASE	на самом деле		general	
+of course	PHRASE	конечно		general	
+at the same time	PHRASE	в то же время		general	
+according to	PHRASE	согласно		general	
+in terms of	PHRASE	с точки зрения		general	
+by means of	PHRASE	посредством		general	
+in front of	PHRASE	перед		general	
+next to	PHRASE	рядом с		general	
+in spite of	PHRASE	несмотря на		general	
+point of view	PHRASE	точка зрения	f	general	
+so that	PHRASE	чтобы		general	
+a number of	PHRASE	ряд		general	
+the majority of	PHRASE	большинство		general	
+lead to	PHRASE	приводить к		general	
+consist of	PHRASE	состоять из		general	
+deal with	PHRASE	иметь дело с		general	
+carry out	PHRASE	проводить	impf,pair:провести	general	
+take place	PHRASE	происходить	impf,pair:произойти	general	
+as soon as	PHRASE	как только		general	
+each other	PHRASE	друг друга		general	
+one another	PHRASE	друг друга		general	
+# --- Научная и академическая лексика ---
+methodology	NOUN	методология	f	general	
+analysis	NOUN	анализ	m	general	
+subject	NOUN	предмет	m	general	
+object	NOUN	объект	m	general	
+phenomenon	NOUN	явление	n,gpl:явлений,forms:nompl=явления	general	
+phenomena	NOUN	явление	n,gpl:явлений,forms:nompl=явления	general	
+category	NOUN	категория	f	general	
+principle	NOUN	принцип	m	general	
+mechanism	NOUN	механизм	m	general	
+device	NOUN	устройство	n	general	
+tool	NOUN	инструмент	m	general	
+instrument	NOUN	инструмент	m	general	
+material	NOUN	материал	m	general	
+substance	NOUN	вещество	n	general	
+particle	NOUN	частица	f	general	
+molecule	NOUN	молекула	f	general	
+atom	NOUN	атом	m	general	
+reaction	NOUN	реакция	f	general	
+interaction	NOUN	взаимодействие	n	general	
+movement	NOUN	движение	n	general	
+direction	NOUN	направление	n	general	
+distance	NOUN	расстояние	n	general	
+speed	NOUN	скорость	f	general	
+temperature	NOUN	температура	f	general	
+volume	NOUN	объём	m	general	
+weight	NOUN	вес	m	general	
+length	NOUN	длина	f	general	
+width	NOUN	ширина	f	general	
+height	NOUN	высота	f	general	
+depth	NOUN	глубина	f	general	
+shape	NOUN	форма	f	general	
+pattern	NOUN	закономерность	f	general	
+trend	NOUN	тенденция	f	general	
+tendency	NOUN	тенденция	f	general	
+phenomenon	NOUN	феномен	m	general	
+issue	NOUN	вопрос	m	general	
+topic	NOUN	тема	f	general	
+theme	NOUN	тема	f	general	
+plot	NOUN	сюжет	m	general	
+character	NOUN	персонаж	m,anim	general	
+hero	NOUN	герой	m,anim	general	
+reader	NOUN	читатель	m,anim	general	
+writer	NOUN	писатель	m,anim	general	
+poet	NOUN	поэт	m,anim	general	
+composer	NOUN	композитор	m,anim	general	
+creator	NOUN	создатель	m,anim	general	
+genius	NOUN	гений	m,anim	general	
+talent	NOUN	талант	m	general	
+skill	NOUN	мастерство	n	general	
+craft	NOUN	ремесло	n	general	
+vision	NOUN	видение	n	general	
+imagination	NOUN	воображение	n	general	
+fantasy	NOUN	фантазия	f	general	
+reality	NOUN	реальность	f	general	
+truth	NOUN	правда	f	general	
+freedom	NOUN	свобода	f	general	
+memory	NOUN	память	f	general	
+consciousness	NOUN	сознание	n	general	
+thought	NOUN	мысль	f	general	
+mind	NOUN	разум	m	general	
+reason	NOUN	разум	m	general	
+logic	NOUN	логика	f	general	
+ethics	NOUN	этика	f	general	
+philosophy	NOUN	философия	f	general	
+religion	NOUN	религия	f	general	
+faith	NOUN	вера	f	general	
+hope	NOUN	надежда	f	general	
+love	NOUN	любовь	f	general	
+hate	NOUN	ненависть	f	general	
+fear	NOUN	страх	m	general	
+joy	NOUN	радость	f	general	
+sadness	NOUN	печаль	f	general	
+anger	NOUN	гнев	m	general	
+surprise	NOUN	удивление	n	general	
+peace	NOUN	мир	m	general	
+war	NOUN	война	f	general	
+battle	NOUN	битва	f	general	
+revolution	NOUN	революция	f	general	
+evolution	NOUN	эволюция	f	general	
+crisis	NOUN	кризис	m	general	
+conflict	NOUN	конфликт	m	general	
+struggle	NOUN	борьба	f	general	
+effort	NOUN	усилие	n	general	
+attempt	NOUN	попытка	f	general	
+action	NOUN	действие	n	general	
+activity	NOUN	деятельность	f	general	
+behavior	NOUN	поведение	n	general	
+behaviour	NOUN	поведение	n	general	
+habit	NOUN	привычка	f	general	
+practice	NOUN	практика	f	general	
+theory	NOUN	теория	f	general	
+hypothesis	NOUN	гипотеза	f	general	
+assumption	NOUN	предположение	n	general	
+conclusion	NOUN	заключение	n	general	
+summary	NOUN	краткое изложение	n	general	
+introduction	NOUN	введение	n	general	
+conclusion	NOUN	вывод	m	general	
+discussion	NOUN	обсуждение	n	general	
+debate	NOUN	дискуссия	f	general	
+conversation	NOUN	разговор	m	general	
+interview	NOUN	интервью	n,inv	general	
+lecture	NOUN	лекция	f	general	
+lesson	NOUN	урок	m	general	
+course	NOUN	курс	m	general	
+training	NOUN	обучение	n	general	
+knowledge	NOUN	знание	n	general	
+wisdom	NOUN	мудрость	f	general	
+truth	NOUN	истина	f	general	
+error	NOUN	ошибка	f	general	
+mistake	NOUN	ошибка	f	general	
+success	NOUN	успех	m	general	
+failure	NOUN	неудача	f	general	
+victory	NOUN	победа	f	general	
+defeat	NOUN	поражение	n	general	
+goal	NOUN	цель	f	general	
+target	NOUN	цель	f	general	
+result	NOUN	итог	m	general	
+outcome	NOUN	результат	m	general	
+consequence	NOUN	последствие	n	general	
+impact	NOUN	воздействие	n	general	
+influence	NOUN	влияние	n	general	
+effect	NOUN	влияние	n	general	
+agent	NOUN	агент	m	general	
+factor	NOUN	фактор	m	general	
+criterion	NOUN	критерий	m	general	
+standard	NOUN	стандарт	m	general	
+norm	NOUN	норма	f	general	
+index	NOUN	индекс	m	general	
+rate	NOUN	показатель	m	general	
+ratio	NOUN	соотношение	n	general	
+percent	NOUN	процент	m	general	
+percentage	NOUN	процент	m	general	
+scale	NOUN	шкала	f	general	
+range	NOUN	диапазон	m	general	
+limit	NOUN	предел	m	general	
+threshold	NOUN	порог	m	general	
+stage	NOUN	стадия	f	general	
+phase	NOUN	фаза	f	general	
+step	NOUN	шаг	m	general	
+procedure	NOUN	процедура	f	general	
+method	NOUN	метод	m	general	
+approach	NOUN	подход	m	general	
+strategy	NOUN	стратегия	f	general	
+tactic	NOUN	тактика	f	general	
+plan	NOUN	план	m	general	
+project	NOUN	проект	m	general	
+program	NOUN	программа	f	general	
+system	NOUN	система	f	general	
+network	NOUN	сеть	f	general	
+base	NOUN	основа	f	general	
+basis	NOUN	основа	f	general	
+foundation	NOUN	основа	f	general	
+core	NOUN	ядро	n,gpl:ядер	general	
+source	NOUN	источник	m	general	
+origin	NOUN	происхождение	n	general	
+root	NOUN	корень	m,gpl:корней	general	
+reason	NOUN	основание	n	general	
+ground	NOUN	основание	n	general	
+field	NOUN	поле	n	general	
+domain	NOUN	область	f	general	
+sphere	NOUN	сфера	f	general	
+branch	NOUN	отрасль	f	general	
+discipline	NOUN	дисциплина	f	general	
+subject	NOUN	субъект	m	general	
+# --- Дополнения: медицина ---
+diet	NOUN	диета	f	med	
+exercise	NOUN	упражнение	n	med	
+lifestyle	NOUN	образ жизни	m	med	
+elevated	ADJ	повышенный		med	
+normal	ADJ	нормальный		med	
+long-term	ADJ	долгосрочный		med	
+short-term	ADJ	краткосрочный		med	
+positive	ADJ	положительный		med	
+negative	ADJ	отрицательный		med	
+effectiveness	NOUN	эффективность	f	med	
+safety	NOUN	безопасность	f	med	
+benefit	NOUN	польза	f	med	
+harm	NOUN	вред	m	med	
+participant	NOUN	участник	m,anim	med	
+volunteer	NOUN	добровольец	m,anim	med	
+team	NOUN	команда	f	med	
+care	NOUN	уход	m	med	
+physical activity	PHRASE	физическая активность	f	med	
+body weight	PHRASE	масса тела	f	med	
+blood cell	PHRASE	клетка крови	f	med	
+red blood cell	PHRASE	эритроцит	m	med	
+white blood cell	PHRASE	лейкоцит	m	med	
+heart attack	PHRASE	инфаркт	m	med	
+heart rate	PHRASE	пульс	m	med	
+high blood pressure	PHRASE	высокое кровяное давление	n	med	
+immune response	PHRASE	иммунный ответ	m	med	
+drug therapy	PHRASE	лекарственная терапия	f	med	
+adverse reaction	PHRASE	неблагоприятная реакция	f	med	
+# --- Дополнения: искусство ---
+creativity	NOUN	творчество	n	art	
+depiction	NOUN	изображение	n	art	
+historian	NOUN	историк	m,anim	art	
+expert	NOUN	эксперт	m,anim	art	
+auction	NOUN	аукцион	m	art	
+sale	NOUN	продажа	f	art	
+purchase	NOUN	покупка	f	art	
+owner	NOUN	владелец	m,anim	art	
+opening	NOUN	открытие	n	art	
+visitor	NOUN	посетитель	m,anim	art	
+guide	NOUN	гид	m,anim	art	
+reflection	NOUN	отражение	n	art	
+cool	ADJ	прохладный		art	
+school	NOUN	школа	f	art	
+workshop	NOUN	мастерская	f	art	
+stroke	NOUN	штрих	m	art	
+silhouette	NOUN	силуэт	m	art	
+outline	NOUN	контур	m	art	
+value	NOUN	ценность	f	art	
+private collection	PHRASE	частная коллекция	f	art	
+permanent collection	PHRASE	постоянная экспозиция	f	art	
+human body	PHRASE	тело человека	n	art	
+art world	PHRASE	мир искусства	m	art	
+# --- Дополнения: общее ---
+wall	NOUN	стена	f	general	
+floor	NOUN	пол	m	general	
+ceiling	NOUN	потолок	m	general	
+window	NOUN	окно	n,gpl:окон	general	
+door	NOUN	дверь	f,gpl:дверей	general	
+table	NOUN	стол	m	general	
+chair	NOUN	стул	m,gpl:стульев	general	
+street	NOUN	улица	f	general	
+road	NOUN	дорога	f	general	
+river	NOUN	река	f	general	
+sea	NOUN	море	n	general	
+mountain	NOUN	гора	f	general	
+forest	NOUN	лес	m	general	
+garden	NOUN	сад	m	general	
+park	NOUN	парк	m	general	
+bridge	NOUN	мост	m	general	
+church	NOUN	церковь	f	general	
+building	NOUN	здание	n	general	
+monument	NOUN	памятник	m	general	
+palace	NOUN	дворец	m,gpl:дворцов	general	
+tower	NOUN	башня	f	general	
+village	NOUN	деревня	f	general	
+region	NOUN	регион	m	general	
+north	NOUN	север	m	general	
+south	NOUN	юг	m	general	
+east	NOUN	восток	m	general	
+west	NOUN	запад	m	general	
+sky	NOUN	небо	n,gpl:небес	general	
+sun	NOUN	солнце	n	general	
+moon	NOUN	луна	f	general	
+star	NOUN	звезда	f	general	
+wind	NOUN	ветер	m,gpl:ветров	general	
+rain	NOUN	дождь	m	general	
+snow	NOUN	снег	m	general	
+season	NOUN	сезон	m	general	
+spring	NOUN	весна	f	general	
+summer	NOUN	лето	n	general	
+autumn	NOUN	осень	f	general	
+winter	NOUN	зима	f	general	
+morning	NOUN	утро	n	general	
+evening	NOUN	вечер	m	general	
+night	NOUN	ночь	f,gpl:ночей	general	
+hour	NOUN	час	m,gpl:часов	general	
+minute	NOUN	минута	f	general	
+moment	NOUN	момент	m	general	
+future	NOUN	будущее	n	general	
+past	NOUN	прошлое	n	general	
+present	NOUN	настоящее	n	general	
+today	NOUN	сегодня	n,inv	general	
+tomorrow	NOUN	завтра	n,inv	general	
+yesterday	NOUN	вчера	n,inv	general	
+man	NOUN	мужчина	m,anim	art	в значении «мужчина»
+woman	NOUN	женщина	f,anim	art	
+child	NOUN	ребёнок	m,anim,forms:nompl=дети;genpl=детей;datpl=детям;accpl=детей;instpl=детьми;preppl=детях	art	
+animal	NOUN	животное	n,anim	general	
+bird	NOUN	птица	f,anim	general	
+flower	NOUN	цветок	m,gpl:цветов	general	
+tree	NOUN	дерево	n	general	
+plant	NOUN	растение	n	general	
+fruit	NOUN	фрукт	m	general	
+horse	NOUN	лошадь	f,anim,gpl:лошадей	general	
+dog	NOUN	собака	f,anim	general	
+cat	NOUN	кошка	f,anim	general	
+fish	NOUN	рыба	f,anim	general	
+# --- Дополнения для демонстрационных текстов ---
+half	NOUN	половина	f	general	
+event	NOUN	событие	n	general	
+well	ADJ	хороший	comp:лучше,compattr:лучший,sup:лучший	general	
+plan	VERB	планировать	impf,pair:запланировать	general	
+detailed	ADJ	детальный		general	
+quick	ADJ	быстрый		general	
+feel	VERB	чувствовать	impf	general	
+french	ADJ	французский		art	
+expect	VERB	ожидать	impf	general	
+amazing	ADJ	удивительный		general	
+inner	ADJ	внутренний		general	
+strength	NOUN	сила	f	general	
+courage	NOUN	мужество	n	general	
+turn	NOUN	поворот	m	general	
+symbol	NOUN	символ	m	general	
+religious	ADJ	религиозный		general	
+complete	VERB	завершать	impf,pair:завершить,pp:завершен	general	
+keep	VERB	хранить	impf,pair:сохранить	general	
+attract	VERB	привлекать	impf,pair:привлечь,pp:привлечен	general	
+impressionist	NOUN	импрессионист	m,anim	art	
+impressionist	ADJ	импрессионистский		art	
+art historian	PHRASE	историк искусства	m,anim	art	
+david	PROPN	Давид	m,anim	art	
+florence	PROPN	Флоренция	f	art	
+claude	PROPN	Клод	m,anim	art	
+world	NOUN	мир	m	general	
+century	NOUN	век	m,forms:nompl=века;genpl=веков;datpl=векам;accpl=века;instpl=веками;preppl=веках	art	
+decade	NOUN	десятилетие	n	general	
+year	NOUN	год	m,gpl:лет,forms:nompl=годы;datpl=годам;accpl=годы;instpl=годами;preppl=годах	art	
+# --- Дополнения 2 ---
+select	VERB	подбирать	impf,pair:подобрать	med	
+individually	ADV	индивидуально		med	
+course	NOUN	течение	n	general	
+further	ADJ	дальнейший		general	
+offer	VERB	предлагать	impf,pair:предложить	general	
+percent	NOUN	процент	m	general	
+according	VERB	согласно		general	according to
+# --- Дополнения 3 ---
+stress	NOUN	стресс	m	med	
+countryside	NOUN	сельская местность	f	art	
+spirit	NOUN	дух	m	art	
+gift	NOUN	подарок	m	general	
+wall	NOUN	стена	f	art	
+window	NOUN	окно	n,gpl:окон	general	
+soft	ADJ	мягкий		art	
+true	ADJ	настоящий		art	
+person	NOUN	человек	m,anim,forms:gen=человека;dat=человеку;acc=человека;inst=человеком;prep=человеке;nompl=люди;genpl=людей;datpl=людям;accpl=людей;instpl=людьми;preppl=людях	art	
+love	VERB	любить	impf	general	
+# --- Дополнения 4 ---
+healthy	ADJ	здоровый		general	
+randomize	ADJ	рандомизированный		med	
+control	VERB	контролировать	impf	med	
+preventive	ADJ	профилактический		med	
+# --- Дополнения 5 ---
+perfect	ADJ	совершенный		general	
+sunrise	NOUN	восход	m	art	
+marble statue	PHRASE	мраморная статуя	f	art	
+# --- Дополнения 6 ---
+recommend	VERB	рекомендовать	impf	general	
+regular	ADJ	регулярный		general	
+public health program	PHRASE	программа общественного здравоохранения	f	med	
+public health programme	PHRASE	программа общественного здравоохранения	f	med	
+agent	NOUN	возбудитель	m,anim	med	агент болезни
+# --- Дополнения 7 ---
+one of	PHRASE	один из		general	
+in my opinion	PHRASE	по моему мнению		general	
+a number of	PHRASE	ряд		general	
+kind of	PHRASE	своего рода		general	
+sort of	PHRASE	своего рода		general	
