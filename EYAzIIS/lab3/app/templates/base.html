@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Автоматическое реферирование документов{% endblock %}</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar no-print">
+  <div class="wrap topbar-in">
+    <a class="brand" href="/">📑 Автореферирование</a>
+    <nav>
+      <a href="/">Обработка</a>
+      <a href="/help">Справка</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+{% block content %}{% endblock %}
+</main>
+<footer class="no-print wrap footer">
+  Лабораторная работа «Автоматическое реферирование документов», вариант 7
+  (французский / английский; sentence extraction + нейросетевой метод).
+</footer>
+</body>
+</html>

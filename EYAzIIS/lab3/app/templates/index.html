@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Автоматическое реферирование документов</h1>
+<p class="lead">Система строит реферат текста методом <b>sentence extraction</b>
+(взвешивание предложений по TF-IDF и позиционным функциям) с
+<b>нейросетевым</b> семантическим уточнением (замена технологии OSTIS).
+На выходе — классический реферат и иерархический список ключевых слов.</p>
+
+{% if error %}<div class="alert no-print">⚠️ {{ error }}</div>{% endif %}
+
+{%- set dom_label = {'cs': 'computer science', 'lit': 'литература'} %}
+<form method="post" action="/summarize" enctype="multipart/form-data" class="card srctabs">
+  <h2>1. Исходный документ</h2>
+
+  {# переключатель источника: работает без JavaScript (чистый CSS :checked) #}
+  <input type="radio" name="source" value="collection" id="src-collection" class="src-radio" checked>
+  <input type="radio" name="source" value="upload" id="src-upload" class="src-radio">
+  <input type="radio" name="source" value="paste" id="src-paste" class="src-radio">
+
+  <div class="tabs no-print" role="tablist">
+    <label for="src-collection" class="tab" title="Выбрать документ тестовой коллекции">Из коллекции</label>
+    <label for="src-upload" class="tab" title="Загрузить свой текстовый файл .txt">Загрузить файл</label>
+    <label for="src-paste" class="tab" title="Вставить текст документа в поле ввода">Вставить текст</label>
+  </div>
+
+  <div class="panes">
+    <div class="tab-pane" id="pane-collection">
+      <p class="hint">Тестовая коллекция (вариант 7): французский и английский,
+         научные статьи по computer science и тексты по литературе.
+         Все документы одинакового размера (~10 страниц А4).</p>
+      <div class="docgrid">
+        {% for m in meta %}
+        <label class="docitem">
+          <input type="radio" name="doc_id" value="{{ m.id }}"
+                 {% if loop.first %}checked{% endif %}>
+          <span class="doccard">
+            <span class="badges">
+              <span class="badge lang-{{ m.lang }}">{{ LANG_NAMES[m.lang] }}</span>
+              <span class="badge dom-{{ m.domain }}">{{ dom_label[m.domain] }}</span>
+            </span>
+            <span class="doctitle">{{ m.title }}</span>
+            <span class="docmeta">{{ m.chars }} симв. ·
+              <a href="/document/{{ m.id }}" target="_blank">просмотр</a></span>
+          </span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="tab-pane" id="pane-upload">
+      <p class="hint">Текстовый файл .txt (UTF-8) с текстом на французском или
+         английском языке.</p>
+      <input type="file" name="file" accept=".txt,text/plain">
+    </div>
+
+    <div class="tab-pane" id="pane-paste">
+      <p class="hint">Вставьте текст документа (французский или английский).</p>
+      <textarea name="text" rows="10" placeholder="Texte du document… / Document text…"></textarea>
+      <label class="inline">Заголовок:
+        <input type="text" name="title" placeholder="(необязательно)"></label>
+    </div>
+  </div>
+
+  <h2>2. Параметры обработки</h2>
+  <div class="opts">
+    <label>Язык:
+      <select name="lang">
+        <option value="auto" selected>определить автоматически</option>
+        <option value="fr">французский</option>
+        <option value="en">английский</option>
+      </select>
+    </label>
+    <label>Предметная область:
+      <select name="domain">
+        <option value="cs" selected>computer science</option>
+        <option value="lit">литература</option>
+      </select>
+    </label>
+    <label>Предложений в реферате:
+      <input type="number" name="n_sentences" value="10" min="1" max="50">
+      <span class="hint">(рекомендуется 10)</span>
+    </label>
+    <label class="check">
+      <input type="checkbox" name="use_neural" value="on" checked>
+      нейросетевое уточнение отбора (семантическая защита от повторов)
+    </label>
+  </div>
+
+  <div class="actions">
+    <button type="submit" class="primary">Построить реферат →</button>
+    <a class="btn" href="/help">Справка</a>
+  </div>
+</form>
+
+<p class="hint center">Нейросетевой бэкенд: <b>{{ backend }}</b></p>
+{% endblock %}

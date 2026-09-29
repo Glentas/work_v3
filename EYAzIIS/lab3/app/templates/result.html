@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Реферат: {{ out.title }}{% endblock %}
+{% block content %}
+<div class="result-head">
+  <h1>Реферат: {{ out.title }}</h1>
+  <p class="meta">
+    Язык: <b>{{ LANG_NAMES.get(out.lang, out.lang) }}</b> ·
+    Область: <b>{{ DOMAIN_NAMES.get(out.domain, out.domain) }}</b> ·
+    Предложений в документе: {{ out.n_sentences_doc }} ·
+    В реферате: {{ out.sentences|length }} ·
+    Сжатие: {{ '%.1f'|format(out.compression * 100) }}% ·
+    Время: {{ '%.0f'|format(out.elapsed_ms) }} мс ·
+    Нейросеть: {{ out.neural_backend }}{% if out.neural_used %} (применена){% else %} (отключена){% endif %}
+  </p>
+  <p class="meta">
+    🔗 Исходный документ:
+    <a href="{{ links.local }}" target="_blank">активная ссылка (локальная копия)</a>
+    {% if links.original %}
+      · <a href="{{ links.original }}" target="_blank">оригинал (Wikipedia)</a>
+    {% endif %}
+  </p>
+  <div class="actions no-print">
+    <a class="btn" href="/result/{{ rid }}/download?fmt=txt">💾 Сохранить в .txt</a>
+    <a class="btn" href="/result/{{ rid }}/download?fmt=html">💾 Сохранить в .html</a>
+    <button class="btn" onclick="window.print()">🖨 Печать</button>
+    <a class="btn" href="/">↩ Новый документ</a>
+  </div>
+</div>
+
+<section class="card">
+  <h2>1. Классический реферат</h2>
+  <p class="hint">Предложения с наибольшим весом W(Sᵢ) = Posd(Sᵢ)·Posp(Sᵢ)·Score(Sᵢ),
+     в последовательности их следования в тексте.</p>
+  <ol class="summary">
+    {% for s in out.sentences %}
+    <li>
+      <div class="stext">{{ s.text }}</div>
+      <div class="sweights no-print">предложение №{{ s.index + 1 }} в документе ·
+        W={{ '%.3f'|format(s.weight) }} · Posd={{ '%.3f'|format(s.posd) }} ·
+        Posp={{ '%.3f'|format(s.posp) }} · Score={{ '%.3f'|format(s.score) }}</div>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+
+<section class="card">
+  <h2>2. Реферат в виде списка ключевых слов</h2>
+  <p class="hint">Иерархический список наиболее информативных слов и словосочетаний
+     (именных групп); семантически близкие термины сгруппированы нейросетевыми
+     эмбеддингами.</p>
+  <ul class="tree">
+    {% for node in out.keywords %}
+    <li>
+      <b>{{ node.term }}</b>
+      <span class="kwmeta no-print">(TF-IDF={{ '%.2f'|format(node.weight) }}, частота={{ node.count }})</span>
+      {% if node.children %}
+      <ul>
+        {% for ch in node.children %}
+        <li>
+          {% if ch.kind == 'semantic' %}<span class="sem">≈</span>{% endif %}
+          {{ ch.term }}
+          <span class="kwmeta no-print">(вес={{ '%.2f'|format(ch.weight) }}, частота={{ ch.count }})</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  <p class="hint">«≈» — семантически близкий термин (нейросетевая группировка);
+     без отметки — словосочетание, содержащее корень.</p>
+</section>
+{% endblock %}

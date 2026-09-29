@@ -1,0 +1,11 @@
+L'apprentissage automatique (en anglais : machine learning (ML), litt. « apprentissage machine »), apprentissage artificiel ou apprentissage statistique est un champ d'étude de l'intelligence artificielle qui se fonde sur des approches mathématiques et statistiques pour donner aux ordinateurs la capacité d'« apprendre » à partir de données, c'est-à-dire d'améliorer leurs performances à résoudre des tâches sans être explicitement programmés pour chacune. Plus largement, il concerne la conception, l'analyse, l'optimisation, le développement et l'implémentation de telles méthodes. On parle d'apprentissage statistique car l'apprentissage consiste à créer un modèle dont l'erreur statistique moyenne est la plus faible possible.
+L'apprentissage automatique comporte généralement deux phases. La première,
+dite phase d'apprentissage ou d'entraînement, consiste à estimer un modèle à partir d'un jeu de données d'entraînement. Cette étape est souvent formulée comme un problème d'optimisation.
+La seconde phase consiste à utiliser le modèle entraîné afin d'effectuer des prédictions sur de nouvelles données.
+Les méthodes d'apprentissage incrémental peuvent continuer à apprendre une fois en production.
+Plusieurs critères permettent de classifier les méthodes existantes.
+Le paradigme d'apprentissage (supervisé, non-supervisé, par renforcement…) est déterminé par la nature des données, et notamment la disponibilité ou non de données étiquetées, c'est-à-dire pour lesquelles la réponse au problème est connue.
+Par ailleurs, chaque méthode cherche à résoudre un problème d'apprentissage précis : on distingue les problèmes de régression, de classification, de partitionnement, et de réduction de dimensionnalité.
+Enfin, pour une tâche identifiée, une méthode d'apprentissage est caractérisée par le choix d'un modèle ainsi que d'algorithmes permettant d'entraîner ce modèle.
+L'apprentissage automatique peut être appliqué à divers types de données, tels des graphes, des arbres, des courbes, ou plus simplement des vecteurs de caractéristiques, qui peuvent être des variables qualitatives ou quantitatives continues ou discrètes.
+Si le modèle apprend de manière incrémentale, en fonction d'une récompense reçue par le programme pour chacune des actions entreprises, on parle d'apprentissage par renforcement.

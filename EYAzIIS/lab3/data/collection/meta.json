@@ -1,0 +1,82 @@
+[
+  {
+    "id": "en_cs_ml",
+    "lang": "en",
+    "domain": "cs",
+    "title": "Machine learning",
+    "source_url": "https://en.wikipedia.org/wiki/Machine_learning",
+    "file": "en_cs_ml.txt",
+    "reference_file": "en_cs_ml.ref.txt",
+    "chars": 17801
+  },
+  {
+    "id": "en_cs_ann",
+    "lang": "en",
+    "domain": "cs",
+    "title": "Artificial neural network",
+    "source_url": "https://en.wikipedia.org/wiki/Artificial_neural_network",
+    "file": "en_cs_ann.txt",
+    "reference_file": "en_cs_ann.ref.txt",
+    "chars": 17983
+  },
+  {
+    "id": "fr_cs_app",
+    "lang": "fr",
+    "domain": "cs",
+    "title": "Apprentissage automatique",
+    "source_url": "https://fr.wikipedia.org/wiki/Apprentissage_automatique",
+    "file": "fr_cs_app.txt",
+    "reference_file": "fr_cs_app.ref.txt",
+    "chars": 18039
+  },
+  {
+    "id": "fr_cs_rnn",
+    "lang": "fr",
+    "domain": "cs",
+    "title": "Réseau de neurones artificiels",
+    "source_url": "https://fr.wikipedia.org/wiki/R%C3%A9seau_de_neurones_artificiels",
+    "file": "fr_cs_rnn.txt",
+    "reference_file": "fr_cs_rnn.ref.txt",
+    "chars": 18012
+  },
+  {
+    "id": "en_lit_ham",
+    "lang": "en",
+    "domain": "lit",
+    "title": "Hamlet",
+    "source_url": "https://en.wikipedia.org/wiki/Hamlet",
+    "file": "en_lit_ham.txt",
+    "reference_file": "en_lit_ham.ref.txt",
+    "chars": 18056
+  },
+  {
+    "id": "en_lit_pp",
+    "lang": "en",
+    "domain": "lit",
+    "title": "Pride and Prejudice",
+    "source_url": "https://en.wikipedia.org/wiki/Pride_and_Prejudice",
+    "file": "en_lit_pp.txt",
+    "reference_file": "en_lit_pp.ref.txt",
+    "chars": 17912
+  },
+  {
+    "id": "fr_lit_mis",
+    "lang": "fr",
+    "domain": "lit",
+    "title": "Les Misérables",
+    "source_url": "https://fr.wikipedia.org/wiki/Les_Mis%C3%A9rables",
+    "file": "fr_lit_mis.txt",
+    "reference_file": "fr_lit_mis.ref.txt",
+    "chars": 18012
+  },
+  {
+    "id": "fr_lit_bov",
+    "lang": "fr",
+    "domain": "lit",
+    "title": "Madame Bovary",
+    "source_url": "https://fr.wikipedia.org/wiki/Madame_Bovary",
+    "file": "fr_lit_bov.txt",
+    "reference_file": "fr_lit_bov.ref.txt",
+    "chars": 18011
+  }
+]
