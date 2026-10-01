@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Классический экстрактивный реферат методом sentence extraction.
 
-Строго по методичке:
   1. Базовый вес слова: TF*IDF.  Учитываются только значимые слова
      (без стоп-слов, чисел и слов чужой письменности).
   2. Вес предложения Si = произведение функций:
@@ -74,7 +73,7 @@ class ExtractionResult:
 
 
 def analyze(doc: Document, idx: CorpusIndex) -> ExtractionResult:
-    """Шаги 1-2 методички: веса слов и веса предложений."""
+    """Веса слов и веса предложений."""
     tf_doc: Counter = Counter()
     for s in doc.sentences:
         tf_doc.update(s.tokens)
@@ -106,11 +105,11 @@ def analyze(doc: Document, idx: CorpusIndex) -> ExtractionResult:
 
 def select_sentences(scored: list[SentenceScore], n: int = 10,
                      neural_rerank=None) -> list[SentenceScore]:
-    """Шаг 3 методички: генерация реферата.
+    """Генерация реферата.
 
     По умолчанию - N предложений с наибольшим весом в порядке следования
     в тексте. Если передан neural_rerank (функция MMR-отбора на нейросетевых
-    эмбеддингах, замена технологии OSTIS), используется нейросетевое
+    эмбеддингах), используется нейросетевое
     уточнение выбора с защитой от семантических повторов.
     """
     if neural_rerank is not None:

@@ -57,7 +57,6 @@
       <ul>
         {% for ch in node.children %}
         <li>
-          {% if ch.kind == 'semantic' %}<span class="sem">≈</span>{% endif %}
           {{ ch.term }}
           <span class="kwmeta no-print">(вес={{ '%.2f'|format(ch.weight) }}, частота={{ ch.count }})</span>
         </li>
@@ -67,7 +66,7 @@
     </li>
     {% endfor %}
   </ul>
-  <p class="hint">«≈» — семантически близкий термин (нейросетевая группировка);
+    <p class="hint">«≈» — семантически близкий термин (нейросетевая группировка);
      без отметки — словосочетание, содержащее корень.</p>
 </section>
 {% endblock %}
