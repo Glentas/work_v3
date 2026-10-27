@@ -1,0 +1,30 @@
+{
+  "de": [
+    { "action": "help",  "title": "Hilfe — список команд",        "keywords": ["hilfe", "befehle", "kommandos", "befehlsliste"] },
+    { "action": "read",  "title": "Vorlesen — читать вслух",      "keywords": ["lies vor", "vorlesen", "lies", "lesen", "sprich", "rede"] },
+    { "action": "stop",  "title": "Stopp — остановить чтение",    "keywords": ["stopp", "stop", "halt", "halte an", "schweig", "ruhe"] },
+    { "action": "next",  "title": "Weiter — следующее сочинение", "keywords": ["weiter", "nächstes", "nächste", "naechstes", "vorwärts"] },
+    { "action": "prev",  "title": "Zurück — предыдущее",          "keywords": ["zurück", "zurueck", "vorheriges", "rückwärts"] },
+    { "action": "first", "title": "Anfang — первое сочинение",    "keywords": ["anfang", "start", "erstes", "erste", "beginne"] },
+    { "action": "list",  "title": "Liste — все сочинения",        "keywords": ["liste", "alle", "zeig alle", "aufsätze", "werke"] }
+  ],
+  "en": [
+    { "action": "help",  "title": "Help — list of commands",   "keywords": ["help", "commands", "list commands"] },
+    { "action": "read",  "title": "Read aloud",                "keywords": ["read aloud", "read", "speak"] },
+    { "action": "stop",  "title": "Stop reading",              "keywords": ["stop", "halt", "quiet", "silence"] },
+    { "action": "next",  "title": "Next essay",                "keywords": ["next", "forward", "following"] },
+    { "action": "prev",  "title": "Previous essay",            "keywords": ["previous", "back", "prior"] },
+    { "action": "first", "title": "First essay",               "keywords": ["first", "start", "begin"] },
+    { "action": "list",  "title": "List all essays",           "keywords": ["list", "all", "show all", "essays"] }
+  ],
+  "ru": [
+    { "action": "help",  "title": "Помощь — список команд",   "keywords": ["помощь", "команды", "справка"] },
+    { "action": "read",  "title": "Читать вслух",             "keywords": ["читай", "читать", "прочитай", "озвучь"] },
+    { "action": "stop",  "title": "Стоп — остановить",        "keywords": ["стоп", "останови", "хватит", "тишина"] },
+    { "action": "next",  "title": "Следующее сочинение",      "keywords": ["следующее", "следующий", "дальше", "вперёд"] },
+    { "action": "prev",  "title": "Предыдущее сочинение",     "keywords": ["предыдущее", "назад"] },
+    { "action": "first", "title": "Первое сочинение",         "keywords": ["первое", "начало", "сначала"] },
+    { "action": "list",  "title": "Все сочинения",            "keywords": ["список", "все", "покажи все"] }
+  ],
+  "entity_note": "Открытие конкретного сочинения — по именам собственным (Faust, Kafka, Buddenbrooks, Romantik …), см. data/essays.json."
+}

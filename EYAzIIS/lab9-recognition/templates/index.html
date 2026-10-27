@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система распознавания речи — немецкий (вариант 7)</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="wrap">
+        <header>
+            <div class="head-row">
+                <div>
+                    <h1>Автоматизированная система распознавания речи</h1>
+                    <p class="sub">Вариант 7 · Немецкий язык · Сочинения по литературе · офлайн-движок Vosk</p>
+                </div>
+                <button id="theme" type="button" class="icon" title="Сменить тему">🌓</button>
+            </div>
+        </header>
+
+        <!-- Микрофон и язык -->
+        <section class="card">
+            <div class="row-top">
+                <h2>Распознавание</h2>
+                <div class="lang">
+                    <label for="langSelect">Язык (ЕЯ):</label>
+                    <select id="langSelect"></select>
+                </div>
+            </div>
+
+            <div class="mic-row">
+                <button id="rec" class="primary mic" type="button">🎙 Начать запись</button>
+                <div class="meter-wrap">
+                    <div id="meter" class="meter"><span id="meterBar"></span></div>
+                    <small>уровень микрофона</small>
+                </div>
+            </div>
+            <p id="status" class="status">Готово. Нажмите «Начать запись» и произнесите команду.</p>
+
+            <div class="sim">
+                <input id="simText" type="text" placeholder="…или введите фразу для проверки без микрофона (напр. öffne Faust)">
+                <button id="simBtn" type="button">Симулировать</button>
+            </div>
+        </section>
+
+        <!-- Список операций -->
+        <section class="card" id="commandsCard">
+            <h2>Список операций</h2>
+            <p class="note">Система реагирует на эти голосовые команды, а также на имена сочинений
+                (Faust, Kafka, Buddenbrooks, Romantik …) — открывает соответствующий текст.</p>
+            <ul id="commands" class="commands"></ul>
+        </section>
+
+        <!-- Просмотр сочинений -->
+        <section class="card">
+            <div class="row-top">
+                <h2 id="essayTitle">Сочинение</h2>
+                <div class="nav">
+                    <button id="prevBtn" type="button" title="Предыдущее">◀</button>
+                    <span id="essayPos">1 / 5</span>
+                    <button id="nextBtn" type="button" title="Следующее">▶</button>
+                </div>
+            </div>
+            <div id="essayText" class="essay" lang="de"></div>
+        </section>
+
+        <!-- Журнал событий (уведомления) -->
+        <section class="card">
+            <div class="row-top">
+                <h2>Журнал</h2>
+                <button id="clearLog" type="button" class="ghost">Очистить</button>
+            </div>
+            <ul id="log" class="log"></ul>
+        </section>
+
+        <footer>
+            <p>Распознавание выполняется на сервере (Vosk, офлайн) — работает в Firefox/LibreWolf.
+            Нужен доступ к микрофону; откройте страницу по <code>http://127.0.0.1:5000</code>.</p>
+        </footer>
+    </div>
+
+    <!-- Всплывающее уведомление -->
+    <div id="toast" class="toast" hidden></div>
+
+    <!-- Аудио для серверного синтеза (команда «read») -->
+    <audio id="ttsAudio" preload="auto"></audio>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

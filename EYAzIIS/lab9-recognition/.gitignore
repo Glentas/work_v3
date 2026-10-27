@@ -1,0 +1,13 @@
+# uv / Python
+.venv/
+__pycache__/
+*.py[cod]
+.env
+
+# Скачиваемые модели Vosk (см. scripts/download_model.py)
+models/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store

@@ -1,0 +1,14 @@
+[project]
+name = "lab9-recognition"
+version = "0.1.0"
+description = "Лабораторная работа 9 — автоматизированная система распознавания речи (вариант 7: немецкий язык, сочинения по литературе)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "flask>=3.0",
+    "vosk>=0.3.45",
+]
+
+# Плоское приложение: uv ведёт .venv и зависимости, проект не упаковывается.
+[tool.uv]
+package = false

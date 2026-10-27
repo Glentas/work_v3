@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система синтеза речи — немецкий (вариант 7)</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="wrap">
+        <header>
+            <div class="head-row">
+                <div>
+                    <h1>Автоматизированная система синтеза речи</h1>
+                    <p class="sub">Вариант 7 · Немецкий язык · Сочинения по литературе</p>
+                </div>
+                <button id="theme" type="button" class="icon" title="Сменить тему">🌓</button>
+            </div>
+        </header>
+
+        <!-- Ввод текста -->
+        <section class="card">
+            <div class="row-top">
+                <label for="text">Текст для озвучивания</label>
+                <div class="actions-mini">
+                    <button id="paste" type="button" title="Вставить из буфера обмена">📋 Вставить</button>
+                    <button id="open" type="button" title="Загрузить текстовый файл">📂 Загрузить .txt</button>
+                    <button id="save" type="button" title="Сохранить текст в файл">💾 Сохранить</button>
+                    <button id="clear" type="button" title="Очистить поле">✕ Очистить</button>
+                </div>
+            </div>
+            <textarea id="text" rows="8"
+                placeholder="Geben Sie hier einen deutschen Text ein… (введите немецкий текст, вставьте из буфера или перетащите .txt-файл)"></textarea>
+            <input id="file" type="file" accept=".txt,text/plain" hidden>
+            <div class="stats">
+                <span><b id="chars">0</b> симв.</span>
+                <span><b id="words">0</b> слов</span>
+                <span>≈ <b id="time">0:00</b> чтения</span>
+                <span class="hint">Ctrl+Enter — воспроизвести · Esc — стоп</span>
+            </div>
+        </section>
+
+        <!-- Примеры предметной области -->
+        <section class="card">
+            <h2>Примеры (предметная область)</h2>
+            <div id="samples" class="samples"></div>
+        </section>
+
+        <!-- Движок синтеза -->
+        <section class="card">
+            <h2>Движок синтеза</h2>
+            <div class="engine" role="radiogroup" aria-label="Движок синтеза">
+                <label class="engine-opt">
+                    <input type="radio" name="engine" value="browser">
+                    <span><b>Браузер</b> · Web Speech API<br><small>голоса ОС, подсветка по ходу чтения; Chrome/Edge</small></span>
+                </label>
+                <label class="engine-opt">
+                    <input type="radio" name="engine" value="server">
+                    <span><b>Сервер</b> · espeak-ng<br><small>надёжно в Firefox/LibreWolf; нужен <code>espeak-ng</code> на сервере</small></span>
+                </label>
+            </div>
+            <p id="engineNote" class="note"></p>
+        </section>
+
+        <!-- Настройки голоса -->
+        <section class="card">
+            <div class="row-top">
+                <h2>Настройки голоса</h2>
+                <button id="resetSettings" type="button" class="ghost" title="Сбросить к значениям по умолчанию">↺ Сбросить</button>
+            </div>
+            <div class="grid">
+                <div class="field span2">
+                    <label for="voice">Голос диктора</label>
+                    <select id="voice"></select>
+                </div>
+                <div class="field">
+                    <label for="rate">Темп: <span id="rateVal">1.0</span>×</label>
+                    <input id="rate" type="range" min="0.5" max="2" step="0.1" value="1">
+                </div>
+                <div class="field">
+                    <label for="pitch">Высота тона: <span id="pitchVal">1.0</span></label>
+                    <input id="pitch" type="range" min="0.5" max="2" step="0.1" value="1">
+                </div>
+                <div class="field">
+                    <label for="volume">Громкость: <span id="volumeVal">100</span>%</label>
+                    <input id="volume" type="range" min="0" max="1" step="0.05" value="1">
+                </div>
+                <div class="field">
+                    <label>Быстрые пресеты темпа</label>
+                    <div class="presets">
+                        <button type="button" data-rate="0.7">Медленно</button>
+                        <button type="button" data-rate="1">Обычно</button>
+                        <button type="button" data-rate="1.5">Быстро</button>
+                    </div>
+                </div>
+            </div>
+            <p class="note">Настройки сохраняются в браузере автоматически.</p>
+        </section>
+
+        <!-- Воспроизведение -->
+        <section class="card">
+            <div class="controls">
+                <button id="speak" class="primary" type="button">▶ Воспроизвести</button>
+                <button id="pause" type="button" disabled>⏸ Пауза</button>
+                <button id="stop" type="button" disabled>⏹ Стоп</button>
+            </div>
+            <p id="status" class="status">Готово.</p>
+        </section>
+
+        <!-- Читалка: поддержка указателя мыши на html-странице -->
+        <section class="card">
+            <div class="row-top">
+                <h2>Чтение по тексту</h2>
+                <span class="tag">выделите фрагмент мышью — появится кнопка озвучивания</span>
+            </div>
+            <div id="reader" class="reader" lang="de">
+                <span class="placeholder">Загрузите пример или введите текст — он появится здесь.
+                    Во время воспроизведения текущее предложение подсвечивается.</span>
+            </div>
+        </section>
+
+        <footer>
+            <p>Синтез выполняется браузером через Web Speech API. Откройте страницу в
+            Chrome/Edge (Windows) — там доступны немецкие голоса диктора.</p>
+        </footer>
+    </div>
+
+    <!-- Плавающая кнопка озвучивания выделенного фрагмента -->
+    <button id="speakSel" class="speak-sel" type="button" hidden>🔊 Озвучить выделенное</button>
+
+    <!-- Аудио для серверного движка (espeak-ng) -->
+    <audio id="audio" preload="auto"></audio>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
