@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Исходный документ: {{ title }}{% endblock %}
+{% block content %}
+<h1>Исходный документ: {{ title }}</h1>
+<p class="meta">
+  Язык: <b>{{ LANG_NAMES.get(lang, lang) }}</b> ·
+  Область: <b>{{ DOMAIN_NAMES.get(domain, domain) }}</b> ·
+  Объём: {{ chars }} символов
+  {% if src %} · Оригинальный источник:
+     <a href="{{ src }}" target="_blank">{{ src }}</a>{% endif %}
+</p>
+<div class="actions no-print">
+  <a class="btn" href="/">↩ К обработке</a>
+</div>
+<article class="card srctext">
+{% for p in text.split("\n") %}
+  <p>{{ p }}</p>
+{% endfor %}
+</article>
+{% endblock %}

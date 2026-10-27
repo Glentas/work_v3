@@ -1,0 +1,36 @@
+# Проект управляется через uv: uv sync / uv run / uv add / uv lock
+# (виртуальный проект: не публикуется, build-system не требуется)
+
+[project]
+name = "lab3-summarizer"
+version = "1.0.0"
+description = "Автоматическое реферирование документов (лабораторная работа, вариант 7): sentence extraction + нейросетевой метод вместо OSTIS; веб-система на FastAPI"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "jinja2>=3.1",
+    "python-multipart>=0.0.9",
+    "numpy>=1.26",
+    # нейросетевой бэкенд по умолчанию: многоязычный трансформер (int8 ONNX)
+    "onnxruntime>=1.17",
+    "tokenizers>=0.19",
+]
+
+[project.optional-dependencies]
+# опциональный нейросетевой бэкенд на torch: NEURAL_BACKEND=transformers
+torch = ["sentence-transformers>=2.7"]
+
+[dependency-groups]
+# сопровождение: оценка качества, диаграммы и отчёт (scripts/)
+dev = [
+    "matplotlib>=3.8",
+    "python-docx>=1.1",
+    "httpx>=0.27",
+]
+
+[tool.uv]
+# кэш тяжёлой модели не принадлежит зависимостям - лежит в .cache/ (вне venv)
+package = false

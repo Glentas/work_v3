@@ -1,0 +1,181 @@
+La concrétisation de l'idée des « machines pensantes » est principalement due à Alan Turing (mathématicien et cryptologue britannique) et à son concept de la « machine universelle » en 1936, qui est à la base des ordinateurs d'aujourd'hui. Il continuera à poser les bases de l'apprentissage automatique, avec son article sur « L'ordinateur et l'intelligence » en 1950, dans lequel il développe, entre autres, le test de Turing.
+En 1943, le neurophysiologiste Warren McCulloch et le mathématicien Walter Pitts publient un article décrivant le fonctionnement de neurones en les représentant à l'aide de circuits électriques. Cette représentation sera la base théorique des réseaux neuronaux.
+Arthur Samuel, informaticien américain pionnier dans le secteur de l'intelligence artificielle, est le premier à faire usage de l'expression machine learning (en français, « apprentissage automatique ») en 1959 à la suite de la création de son programme pour IBM en 1952. Le programme jouait au Jeu de Dames et s'améliorait en jouant. À terme, il parvint à battre le 4e meilleur joueur des États-Unis.
+Une avancée majeure dans le secteur de l'intelligence machine est le succès de l'ordinateur développé par IBM, Deep Blue, qui est le premier à vaincre le champion mondial d'échecs Garry Kasparov en 1997. Le projet Deep Blue en inspirera nombre d'autres dans le cadre de l'intelligence artificielle, particulièrement un autre grand défi : IBM Watson, l'ordinateur dont le but est de gagner au jeu Jeopardy!. Ce but est atteint en 2011, quand Watson gagne à Jeopardy! en répondant aux questions par traitement de langage naturel.
+Une nette accélération a lieu à partir de 2012, avec de nombreux succès applicatifs obtenus à l'aide de réseaux de neurones profonds : c'est le début du boom de l'intelligence artificielle.
+Les modèles utilisés ne sont pas nouveaux, mais une transformation s'opère par l'effet conjoint de plusieurs facteurs :
+l'utilisation de processeurs graphiques pour l'entraînement des modèles, l'abondance de jeux de données étiquetées, ainsi que quelques modifications des architectures existantes (notamment l'utilisation de la fonction partie positive comme non-linéarité, de techniques de dropout permettant de limiter le sur-apprentissage, et de nouvelles techniques d'initialisation des poids des réseaux).
+En 2012, un réseau neuronal (non-supervisé) développé par Google parvient à reconnaître des visages humains ainsi que des chats dans des vidéos YouTube. Quelques mois plus tard, le modèle AlexNet surpasse significativement les méthodes existantes sur une tâche de classification d'image.
+En 2014, 64 ans après la prédiction d'Alan Turing, le dialogueur Eugene Goostman est le premier à réussir le test de Turing en parvenant à convaincre 33 % des juges humains au bout de cinq minutes de conversation qu'il est non pas un ordinateur, mais un garçon ukrainien de 13 ans.
+En 2015, l'ordinateur « AlphaGo » de Google gagne contre un des meilleurs joueurs au jeu de Go, jeu de plateau considéré comme le plus dur du monde.
+En 2016, le modèle LipNet parvient à lire sur les lèvres avec un grand taux de succès.
+À partir de 2017, le développement des transformeurs, basés sur le mécanisme d'attention,
+donne lieu à la naissance des grands modèles de langage. En particulier, les transformeurs génératifs préentraînés permettent d'effectuer de la génération de texte et sont rendus accessibles au grand public dans les années suivantes. Ces modèles dépassent alors significativement les performances des méthodes pré-existantes en traitement du langage naturel.
+L'apprentissage automatique permet à un système piloté ou assisté par ordinateur d'adapter ses réponses ou comportements aux situations rencontrées, en se fondant sur l'analyse de données empiriques passées issues de bases de données, de capteurs, ou du web.
+Le point commun à toutes les méthodes d'apprentissage automatique est d'exploiter de l'information contenue dans un jeu de données. Ces données peuvent toutefois être de nature très différentes : des données numériques, des séries temporelles, un corpus de textes, une collection d'images, de signaux audio ou vidéo, de graphes, etc.
+La nature et la richesse des données disponibles définit le paradigme d'apprentissage, c'est-à-dire la manière dont les données guident le processus d'apprentissage. Par exemple, si l'on cherche à apprendre un détecteur de spam à partir d'une collection d'emails ayant été manuellement annotés comme désirables ou indésirables, on parle d'apprentissage supervisé : les données contiennent de l'information issue d'une supervision humaine, qui permet d'expliquer ce que l'on cherche à prédire.
+Un système d'apprentissage repose sur le choix d'un modèle, c'est-à-dire d'un objet mathématique, décrit le plus souvent par des paramètres, permettant de capturer et d'expliquer certaines structures ou relations dans les données étudiées. Les paramètres du modèle sont ajustés à partir des données d'entraînement afin d'en décrire au mieux la structure.
+Le choix du modèle est sujet à un compromis : un modèle simple contenant peu de paramètres est plus facile à entraîner, mais peut se révéler insuffisant si les données à modéliser sont complexes (par exemple fortement non linéaires) ; à l'inverse, un modèle complexe contenant de nombreux paramètres sera typiquement plus expressif et performant, mais il sera beaucoup plus difficile et coûteux d'en ajuster les paramètres.
+La phase d'apprentissage consiste à rechercher la valeur des paramètres du modèle permettant d'expliquer au mieux les données observées. Elle est souvent formulée comme un problème d'optimisation, qui peut être convexe ou non convexe selon la complexité du modèle, et dont la résolution est typiquement effectuée en utilisant des algorithmes comme la descente de gradient ou descente de gradient stochastique.
+L'entraînement de réseaux de neurones artificiels
+est par exemple un problème non convexe, et est classiquement résolu en utilisant la méthode de rétropropagation du gradient. Cette technique consiste à estimer itérativement, pour chaque couche du modèle et chaque paramètre de chaque couche, dans quelle mesure il a contribué à une bonne réponse ou à une erreur du modèle, et à l'ajuster en conséquence.
+La théorie de l'apprentissage automatique fait appel à de nombreux domaines connexes, comme les statistiques, l'analyse fonctionnelle, la théorie de l'approximation ou encore l'optimisation.
+La visée principale des travaux théoriques en apprentissage automatique est de formaliser et prouver l'idée qu'un algorithme d'apprentissage est capable d'apprendre des règles générales à partir d'un nombre limité d'exemples d'entraînement. Une fois entraîné, un modèle doit donc permettre d'effectuer de bonnes prédictions sur de nouvelles données, c'est-à-dire des données qui ne faisaient pas partie du jeu de données d'entraînement.
+Ces questions sont au cœur de la théorie de l'apprentissage statistique.
+Les données d'entraînement sont classiquement modélisées comme étant des échantillons indépendants et identiquement distribués d'une loi de probabilité sous-jacente inconnue.
+On cherche alors à contrôler l'erreur de prédiction qu'un modèle, entraîné sur un tel échantillon, commettrait en moyenne par rapport à la loi de probabilité des données (erreur de généralisation).
+Le modèle étant classiquement entraîné en minimisant l'erreur de prédiction sur les données d'entraînement (minimisation du risque empirique), un enjeu clé dans ce contexte est de réussir à borner l'erreur de généralisation d'un prédicteur par son erreur empirique.
+Cela peut être fait de manière uniforme par rapport à une classe de fonction, comme dans le cadre de la théorie de l'apprentissage PAC, ou en utilisant des propriétés plus spécifiques de l'algorithme d'apprentissage considéré.
+Ces résultats dépendent typiquement de la complexité de la classe de fonctions considérée, qui peut être mesurée avec des outils tels que la dimension de Vapnik-Chervonenkis, la complexité de Rademacher, ou encore des propriétés de recouvrement.
+Par ailleurs, le problème de minimisation du risque empirique ne peut pas toujours être résolu de manière exacte, et le plus souvent une solution approchée est calculée au moyen d'un algorithme itératif (par exemple un algorithme de descente de gradient stochastique). Pour cette raison, des outils d'optimisation sont souvent utilisés afin de contrôler l'erreur d'un estimateur produit par un algorithme d'entraînement particulier.
+De nombreuses variantes du cadre classique d'apprentissage existent, dont l'apprentissage PAC-Bayésien basé sur une distribution a priori dans l'espace des prédicteurs, l'apprentissage avec des données non i.i.d., l'apprentissage actif, l'apprentissage par renforcement.
+L'apprentissage automatique est utilisé dans un large spectre d'applications pour doter des ordinateurs ou des machines de capacité d'analyser des données d'entrée comme : perception de leur environnement (vision, Reconnaissance de formes tels des visages, schémas, segmentation d'image, langages naturels, caractères dactylographiés ou manuscrits ; moteurs de recherche, analyse et indexation d'images et de vidéo, en particulier pour la recherche d'image par le contenu ; aide aux diagnostics, médical notamment, bio-informatique, chémoinformatique ; interfaces cerveau-machine ; détection de fraudes à la carte de crédit, cybersécurité, analyse financière, dont analyse du marché boursier ; classification des séquences d'ADN ; jeu ; génie logiciel ; adaptation de sites Web ; robotique (locomotion de robots, etc.) ; analyse prédictive dans de nombreux domaines (financière, médicale, juridique, judiciaire), diminution des temps de calcul pour les simulations informatiques en physique (calcul de structures, de mécanique des fluides, de neutronique, d'astrophysique, de biologie moléculaire, etc.), optimisation de design dans l'industrie, modèles météorologiques ou prédictions de l'ensoleillement dans le développement des énergies solaires,etc.
+Exemples :
+un système d'apprentissage automatique peut permettre à un robot ayant la capacité de bouger ses membres, mais ne sachant initialement rien de la coordination des mouvements permettant la marche, d'apprendre à marcher. Le robot commencera par effectuer des mouvements aléatoires, puis, en sélectionnant et privilégiant les mouvements lui permettant d'avancer, mettra peu à peu en place une marche de plus en plus efficace[réf. nécessaire] ;
+la reconnaissance de caractères manuscrits est une tâche complexe car deux caractères similaires ne sont jamais exactement identiques. Il existe des systèmes d'apprentissage automatique qui apprennent à reconnaître des caractères en observant des « exemples », c'est-à-dire des caractères connus. Un des premiers système de ce type est celui de reconnaissance des codes postaux US manuscrits issu des travaux de recherche de Yann Le Cun, un des pionniers du domaine, et ceux utilisés pour la reconnaissance d'écriture ou OCR.
+Les algorithmes d'apprentissage peuvent être catégorisés selon la tâche d'apprentissage qu'ils cherchent à résoudre, c'est-à-dire selon ce qu'ils cherchent à apprendre.
+Toutefois, la nature des données disponibles conditionne directement ce que l'on peut ou non apprendre à partir de ces données. Pour cette raison, les tâches d'apprentissage peuvent elles-mêmes être catégorisées
+en plusieurs paradigmes d'apprentissage :
+L'apprentissage supervisé est utilisé lorsque le jeu de données décrit explicitement la sortie désirée ; c'est le cas notamment des problèmes de régression de classification, où l'on cherche à apprendre un prédicteur de la forme
+Y
+=
+f
+(
+X
+)
+{\displaystyle Y=f(X)}
+à partir de multiples observations
+(
+x
+i
+,
+y
+i
+)
+1
+≤
+i
+≤
+n
+{\displaystyle (x_{i},y_{i})_{1\leq i\leq n}}
+des variables
+X
+,
+Y
+{\displaystyle X,Y}
+.
+L'apprentissage non supervisé est utilisé lorsque l'on souhaite identifier une structure dans un ensemble d'observations
+(
+x
+i
+)
+1
+≤
+i
+≤
+n
+{\displaystyle (x_{i})_{1\leq i\leq n}}
+, mais sans disposer d'observations complémentaires ou d'étiquettes qui permettraient de décrire cette structure. C'est le cas notamment du partitionnement de données, et plus généralement de nombreuses méthodes de réduction de dimensionnalité.
+L'apprentissage par renforcement est utilisé lorsqu'un agent autonome peut interagir avec son environnement afin d'apprendre comment se comporter dans le but d'optimiser une récompense cumulée au cours du temps.
+L'apprentissage supervisé (ou analyse discriminante) consiste à apprendre une fonction
+f
+{\displaystyle f}
+modélisant une relation de la forme
+Y
+=
+f
+(
+X
+)
+{\displaystyle Y=f(X)}
+entre deux variables
+X
+,
+Y
+{\displaystyle X,Y}
+qui,
+une fois apprise, permet de prédire une sortie
+Y
+{\displaystyle Y}
+pour une entrée
+X
+{\displaystyle X}
+donnée.
+L'apprentissage est effectué en utilisant un ensemble d'observations jointes
+(
+x
+i
+,
+y
+i
+)
+1
+≤
+i
+≤
+n
+{\displaystyle (x_{i},y_{i})_{1\leq i\leq n}}
+de ces variables.
+De multiples problèmes rentrent dans ce cadre : la variable
+Y
+{\displaystyle Y}
+peut être quantitative (par exemple une température), et on parle alors de régression, ou qualitative (par exemple une classe : un chien ou un chat), et on parle alors de classification. Lorsque
+Y
+{\displaystyle Y}
+est un objet complexe (par exemple un graphe), on parle de prédiction structurée.
+Le fait qu'un ensemble de paires d'observations
+(
+x
+i
+,
+y
+i
+)
+1
+≤
+i
+≤
+n
+{\displaystyle (x_{i},y_{i})_{1\leq i\leq n}}
+soit utilisé pour l'entraînement est ce qui caractérise ce paradigme :
+dans le cas d'un problème de classification d'images par exemple, les classes sont prédéterminées et la fonction
+f
+{\displaystyle f}
+est apprise en suivant les exemples de classements contenus dans les données d'entraînement. Un expert (ou oracle) doit préalablement étiqueter les exemples
+(
+x
+i
+)
+1
+≤
+i
+≤
+n
+{\displaystyle (x_{i})_{1\leq i\leq n}}
+.
+Il est parfois préférable d'associer une donnée non pas à une classe unique, mais à une probabilité d'appartenance à chacune des classes prédéterminées ; on parle alors d'apprentissage supervisé probabiliste.
+L'analyse discriminante linéaire, les machines à vecteurs de support et les réseaux de neurones sont des exemples de modèles classiquement utilisés en apprentissage supervisé.
+Des cas d'usage typiques d'apprentissage supervisé peuvent être d'estimer la météo du lendemain en fonction de celle des jours précédents, de prédire le vote d'un électeur en fonction de certaines données économiques et sociales, d'estimer la résistance d'un nouveau matériau en fonction de sa composition, de déterminer la présence ou non d'un objet dans une image, ou encore de catégoriser de nouveaux patients en risque estimé de développer telle ou telle maladie au vu de leurs analyses médicales.
+Lorsque le jeu de données contient seulement des observations
+x
+1
+,
+…
+,
+x
+n
+{\displaystyle x_{1},\dots ,x_{n}}
+, mais pas d'étiquettes permettant de décrire ce que l'on cherche à prédire, on parle d'apprentissage non-supervisé.
+L'objectif est alors d'identifier une structure sous-jacente, sans supervision : aucun expert n'est requis.
+L'apprentissage non supervisé présente l'intérêt de pouvoir fonctionner sur une base de données non annotée, or le processus d'annotation est généralement fastidieux et coûteux. Par exemple en médecine, l'annotation requiert typiquement l'intervention d'un spécialiste.
+Les problèmes les plus courants en apprentissage non supervisé sont le partitionnement de données, la réduction de dimensionnalité, et la détection d'anomalie.
+Les modèles couramment utilisés incluent l'algorithme des k-moyennes pour le partitionnement, et l'analyse en composantes principales pour la réduction de dimensionnalité. Certains réseaux de neurones comme les auto-encodeurs sont également non supervisés.
+Le problème du partitionnement de données (clustering en anglais) est l'exemple le plus commun d'apprentissage non supervisé : il consiste à identifier des groupes d'observations similaires, sans que le nombre ni la nature de ces groupes n'aient été prédéterminés.
+La similarité est généralement calculée selon une distance entre les paires d'exemples.
+C'est ensuite à l'opérateur d'associer une signification à chaque groupe.
+On parle de partitionnement diffus (soft clustering en anglais) lorsque les observations peuvent appartenir à plusieurs groupes (ou se voient attribuer une probabilité d'appartenance à chaque groupe dans le cas d'approches probabilistes).
+Cette méthode est souvent source de sérendipité.
+Exemple : Pour un épidémiologiste qui voudrait dans un ensemble assez large de victimes de cancer du foie tenter de faire émerger des hypothèses explicatives, un algorithme de partitionnement pourrait identifier différents groupes, que l'épidémiologiste chercherait ensuite à associer à divers facteurs explicatifs : origines géographique, génétique, habitudes ou pratiques de consommation, expositions à divers agents potentiellement ou effectivement toxiques, etc.
+Pour un problème comme la classification, l'apprentissage non supervisé est généralement moins performant que l'apprentissage supervisé : l'information supplémentaire venant de la supervision humaine permet de mieux guider l'apprentissage, tandis qu'un algorithme de partitionnement identifiera des corrélations qui peuvent dans certains cas permettre d'identifier les classes recherchées, mais sans garantie.
+La réduction de la dimensionnalité consiste à identifier une transformation, possiblement non linéaire, permettant de représenter les données d'entrée par un plus petit nombre de variables tout en préservant une certaine notion de structure, qui peut varier selon le problème considéré. De nombreuses méthodes de réduction de la dimensionnalité sont basées sur l'apprentissage non supervisé.
+Cela regroupe des problèmes tels que la construction d'un sous-espace ou une variété de faible dimension permettant de projeter les données en induisant une déformation moyenne minimale, ainsi que de nombreux problèmes en visualisation de données.
