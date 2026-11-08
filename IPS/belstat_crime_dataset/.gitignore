@@ -1,1 +1,26 @@
 */data
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+.env
+.venv/
+venv/
+
+# Node.js
+node_modules/
+.next/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.vscode/
+
+# Logs
+*.log
+logs/
